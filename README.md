@@ -3,7 +3,7 @@
 This project is an end-to-end implementation of an eCommerce website, designed and developed from scratch based on a provided Figma design. The website is fully responsive and features a sleek, modern interface optimized for a seamless user experience across devices. The project leverages cutting-edge frontend and backend technologies to create an intuitive and functional online shopping platform.
 
 ## Features <br>
-**9 Dynamic Pages:** The website includes the following pages, each with its own unique functionality: <br>
+- **9 Dynamic Pages:** The website includes the following pages, each with its own unique functionality: <br>
 
 - **Home:** A clean and modern landing page that showcases featured products and promotions. <br>
 - **Shop:** Displays a range of products with filtering options to refine the product search. <br>
@@ -14,6 +14,8 @@ This project is an end-to-end implementation of an eCommerce website, designed a
 - **Contact:** A contact page with a form for inquiries or support requests. <br>
 - **Product Comparison:** Allows users to compare products based on key attributes. <br>
 - **Blog Page:** A simple yet effective blog section for product updates, news, or promotional content. <br>
+
+
 - **Responsive Design:** The site features a mobile-first design, ensuring optimal user experience on all devices, from desktops to smartphones. <br>
 
 - **Sleek UI/UX:** A visually appealing, user-friendly interface based on a modern eCommerce layout with smooth transitions and easy navigation. <br>
