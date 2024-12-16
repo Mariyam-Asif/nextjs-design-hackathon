@@ -10,12 +10,6 @@ export default function Inspirations() {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
-  const handlePrev = () => {
-    setCurrentImageIndex(
-      (prevIndex) => (prevIndex - 1 + images.length) % images.length
-    );
-  };
-
   return (
     <div className="container py-[44px]">
       {/* Left Side */}
