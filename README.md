@@ -24,7 +24,7 @@ This project is an end-to-end implementation of an eCommerce website, designed a
 
 - **Real-Time Updates:** Cart updates in real-time as users modify product quantities or remove items.
 
-**Technologies Used**
+## Technologies Used
 
 - HTML5, CSS3, and JavaScript <br>
 - React.js for a dynamic, component-based user interface <br>
