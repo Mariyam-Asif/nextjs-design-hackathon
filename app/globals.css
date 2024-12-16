@@ -1,21 +1,339 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    font-family: "Poppins", sans-serif;
   }
+  .logo {
+    width: 20%;
+    height: auto;
+    max-width: 185px;
+  }
+  .favicon {
+    width: 17%;
+    height: auto;
+  }
+  .nav-link {
+    display: inline-block;
+    margin: 0 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .container-padding {
+    @apply py-4 px-6;
+  }
+  .icon {
+    width: 23px;
+    height: 20px;
+  }
+  .img {
+    object-fit: cover;
+    width: 100%;
+    height: 300px;
+  }
+  .container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    gap: 2rem;
+    background-color: #fcf8f3;
+  }
+  .left-side {
+    width: 40%;
+    padding-left: 70px;
+  }
+  .left-side h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  .left-side h3 {
+    font-size: 1rem;
+    color: #616161;
+  }
+  .left-side button {
+    margin-top: 1rem;
+    padding: 1rem 2.25rem;
+    background-color: #b88e2f;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+.left-side button:hover{
+  background-color: #9c7b29;
+}
+  .right-side {
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .image-container {
+    display: flex;
+    gap: 24px;
+    position: relative;
+  }
+
+  .main-image,
+  .second-image,
+  .third-image {
+    position: relative;
+  }
+  .main-image {
+    width: 40%;
+    transform: translateX(60px);
+    min-width: 300px;
+    max-width: 500px;
+  }
+  .second-image {
+    width: 35%;
+    transform: translateX(60px);
+  }
+  .third-image {
+    right: -26%;
+    width: 35%;
+    height: 100%;
+    position: absolute;
+  }
+  .image {
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+  .image-tracker {
+    position: absolute;
+    bottom:2px;
+    left: 51%;
+    display: flex;
+    gap: 20px;
+  }
+  .tracker-circle {
+    position: relative;
+    width: 27px;
+    height: 27px;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .tracker-circle::before{
+content: "";
+width: 11px;
+height: 11px;
+background-color: #ccc;
+border-radius: 50%;
+  }
+  .tracker-circle.active {
+border: 1px solid #b88e2f;
+  }
+
+  .tracker-circle.active::before{
+    background-color: #b88e2f;
+  }
+  .arrow {
+    position: absolute;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    background-color: white;
+    color: #b88e2f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  .arrow:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.1);
+  }
+  .arrow:before {
+    content: ">";
+  }
+
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  @media (max-width: 480px) {
+    /* Mobile Small devices*/
+    .favicon {
+      width: 17%;
+    }
+    .nav-link {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+    .main-image {
+      width: 100%;
+    }
+    .second-image,
+    .third-image {
+      display: none;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .left-side {
+      width: 100%;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+    }
+    .right-side {
+      width: 100%;
+      margin-top: 1rem;
+
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .arrow{
+      width: 58px;
+      height: 58px;
+    }
+  }
+
+  @media (min-width: 481px) and (max-width: 786px) {
+    /* Mobile Large devices */
+    .logo {
+      width: 50%;
+    }
+    .nav-link {
+      display: inline-block;
+    }
+    .container-padding {
+      @apply pl-12 pr-24;
+    }
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+    .main-image {
+      width: 100%;
+    }
+    .second-image,
+    .third-image {
+      display: none;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .left-side {
+      width: 100%;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+    }
+    .arrow{
+      width: 58px;
+      height: 58px;
+    }
+  }
+  @media (min-width: 769px) and (max-width: 1024px) {
+    /* Tablet */
+    .logo {
+      width: 40%;
+    }
+    .container-padding {
+      @apply pl-12 pr-24;
+    }
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .main-image, .second-image {
+      width: 100%;
+    }
+   
+    .third-image {
+      display: none;
+    }
+    .container {
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .left-side {
+      width: 100%;
+      text-align: center;
+    }
+    .right-side {
+      width: 90%;
+    }
+    .image-container {
+      width: 90%;
+      position: relative;
+    }
+    .image-tracker {
+    position: absolute;
+    bottom: 50%;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    }
+  }
+  @media (min-width: 1025px) and (max-width: 1440px) {
+    /* Small Laptop */
+    .logo {
+      width: 30%;
+    }
+    .container-padding {
+      @apply pl-14 pr-28;
+    }
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+    
+  }
+  @media (min-width: 1441px) {
+    /* Desktop */
+    .logo {
+      width: 20%;
+    }
+    .container-padding {
+      @apply pl-16 pr-32;
+    }
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
 }
