@@ -66,7 +66,7 @@ export default function Navbar() {
         <Image src={profile} alt="profile icon" className="icon transition-all duration-300 transform hover:scale-110 hover:shadow-lg" />
         <Image src={search} alt="search icon" className="icon transition-all duration-300 transform hover:scale-110 hover:shadow-lg" />
         <Image src={heart} alt="heart icon" className="icon transition-all duration-300 transform hover:scale-110 hover:shadow-lg" />
-        <Image src={cart} alt="add to cart icon" className="icon transition-all duration-300 transform hover:scale-110 hover:shadow-lg" />
+        <Link href="/cart"><Image src={cart} alt="add to cart icon" className="icon transition-all duration-300 transform hover:scale-110 hover:shadow-lg" /></Link>
       </div>
     </div>
   );

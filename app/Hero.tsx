@@ -1,5 +1,6 @@
 import Image from "next/image";
 import hero from "@/public/hero-image.jpg";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -22,8 +23,8 @@ export default function Hero() {
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit
             tellus, luctus nec ullamcorper mattis.
           </h3>
-          <button className="bg-[#B88E2F] text-white py-2 px-4 sm:py-3 sm:px-6 md:py-4 md:px-8 text-xs sm:text-sm md:text-base font-bold transition-all duration-500 hover:bg-[#a87726] hover:shadow-2xl hover:-translate-y-1 hover:scale-110">
-            BUY NOW
+          <button>
+            <Link href="/shop"  className="bg-[#B88E2F] text-white py-2 px-4 sm:py-3 sm:px-6 md:py-4 md:px-8 text-xs sm:text-sm md:text-base font-bold transition-all duration-500 hover:bg-[#a87726] hover:shadow-2xl hover:-translate-y-1 hover:scale-110">BUY NOW </Link>
           </button>
         </div>
       </div>

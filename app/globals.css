@@ -172,6 +172,59 @@ border: 1px solid #b88e2f;
   gap: 16px;
 }
 
+.pagination {
+  border-radius: 10px;
+  padding: 15px 24px;
+  background-color: #F9F1E7;
+  color: black;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.pagination:hover {
+  background-color: #9c7b29;
+}
+.pagination.active {
+  background-color: #B88E2F;
+  color: white;
+}
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: white;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+}
+.button-hover-effect {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+.button-hover-effect:hover{
+  background-color: #000;
+  color: #fff;
+  border-color: transparent;
+}
+.button-hover-effect::after{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
+  transition: left 0.3s ease-in-out;
+}
+.button-hover-effect:hover::after {
+  left: 100%;
+}
+.cart-item-hover-effect {
+  transition: all 0.3s ease-in-out;
+}
+.cart-item-hover-effect:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
   @media (max-width: 480px) {
     /* Mobile Small devices*/
     .favicon {

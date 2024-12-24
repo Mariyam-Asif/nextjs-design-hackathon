@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { CartProvider } from './CartContext';
 
 export const metadata: Metadata = {
   title: "eCommerce Website | Web Page Design",
@@ -17,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Navbar/>
-        {children}
+        <CartProvider>{children}</CartProvider>
         <Footer/>
       </body>
     </html>
