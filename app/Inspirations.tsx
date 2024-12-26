@@ -19,7 +19,7 @@ export default function Inspirations() {
           Our designer already made a lot of beautiful prototipe of rooms that
           inspire you
         </h3>
-        <button>Explore More</button>
+        <button >Explore More</button>
       </div>
 
       {/* Right Side */}
