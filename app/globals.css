@@ -225,6 +225,10 @@ border: 1px solid #b88e2f;
   transform: scale(1.03);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+.grid-cols-4 {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+}
   @media (max-width: 480px) {
     /* Mobile Small devices*/
     .favicon {

@@ -20,7 +20,6 @@ const ShopPage = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const {addToCart} = useCart();
 
-
   const initialProducts = [
     {
       image: syltherine,

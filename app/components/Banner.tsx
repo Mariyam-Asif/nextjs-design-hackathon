@@ -5,10 +5,11 @@ import logo  from "@/public/logo-favicon.svg";
 
 interface BannerProps {
     pageName:string;
+    breadcrumbdName?: string;
     showLogo?: boolean;
 }
 
-export default function Banner({pageName, showLogo = false}:BannerProps){
+export default function Banner({pageName, breadcrumbdName, showLogo = false}:BannerProps){
     return (
         <div>
             <div className="w-full md:h-[50vh] h-[30vh] relative">
@@ -26,7 +27,7 @@ export default function Banner({pageName, showLogo = false}:BannerProps){
                 className="w-17 h-17"
                 />
             )}
-          <h2 className="font-medium text-[48px]">{pageName}</h2>
+          <h2 className="font-medium text-[48px] text-center">{pageName}</h2>
           <h3 className="font-medium text-base">
             <Link href="/">
               <span className="hover:text-white cursor-pointer transition-all duration-300 mr-[6px]">
@@ -34,7 +35,7 @@ export default function Banner({pageName, showLogo = false}:BannerProps){
               </span>
             </Link>
             <span className="hover:text-white cursor-default transition-all duration-300">
-              &gt; <span className="font-light">{pageName}</span>
+              &gt; <span className="font-light">{breadcrumbdName || pageName}</span>
             </span>
           </h3>
         </div>
