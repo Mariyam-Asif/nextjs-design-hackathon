@@ -55,7 +55,7 @@ const handleAddToCart = (item:{id:string; title:string; price:string})=>{
 }
   return (
     <div>
-      <h1 className="font-bold text-2xl text-[#333333] ml-4 mb-4 mt-2">Search Results for "{query}"</h1>
+      <h1 className="font-bold text-2xl text-[#333333] ml-4 mb-4 mt-2">Search Results for &quot;{query}&quot;</h1>
       {loading ? (
         <p>Loading...</p>
       ) : (

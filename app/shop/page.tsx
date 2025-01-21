@@ -81,7 +81,7 @@ const ShopPage = () => {
     }
     setSortedProducts(filteredProducts);
     setCurrentPage(1);
-  }, [showAvailableOnly])
+  }, [showAvailableOnly, products])
 
   const handleAddToCart = (product: { title: string; price: string }) => {
     addToCart(product);
