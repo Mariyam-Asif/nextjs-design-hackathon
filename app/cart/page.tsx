@@ -11,7 +11,7 @@ interface CartItem {
   id: number;
   title: string;
   price: string;
-  image: string; 
+  imageUrl: string; 
   quantity: number;
 }
 export default function Cart() {
@@ -19,7 +19,8 @@ export default function Cart() {
 const { cartItems, removeFromCart, updateQuantity } = useCart();
 
 const getNumericPrice = (price:string):number =>{
-  return parseInt(price.replace(/[^0-9]/g, ""))
+  const priceString = price.toString();
+  return parseInt(priceString.replace(/[^0-9]/g, ""),10);
 }
   const handleQuantityChange = (title:string, quantity: number) => {
     if(!isNaN(quantity) && quantity >= 1) {
@@ -68,9 +69,10 @@ const getNumericPrice = (price:string):number =>{
                 className="flex flex-wrap lg:justify-center lg:items-center gap-4 md:gap-8 mt-8 lg:mt-14"
               >
                 <Image
-                  src={item.image}
+                  src={item.imageUrl}
                   alt={item.title}
-                  className="w-24 h-24"
+                  width={96}
+                  height={96}
                 />
                 <div className="flex flex-col md:flex-row justify-between md:justify-center items-start md:items-center gap-4 md:gap-14 text-[#9F9F9F] font-normal ">
                   <p className="text-xl md:text-base">{item.title}</p>
@@ -100,7 +102,7 @@ const getNumericPrice = (price:string):number =>{
 
                 <div className="flex justify-between items-center mt-8 md:hidden">
                   <p className="text-black flex gap-10">
-                    Subtotal<span className="font-medium">Rp {(getNumericPrice(item.price) * item.quantity).toLocaleString()}</span>
+                    Subtotal<span className="font-medium">Rs {(getNumericPrice(item.price) * item.quantity).toLocaleString()}</span>
                   </p>
                   <Image
                     src={delete_icon}

@@ -10,7 +10,7 @@ interface CartItem {
   title:string;
   price:string;
   quantity:number;
-  image:string;
+  imageUrl:string;
 }
 interface CartSidebarProps {
   isVisible:boolean;
@@ -23,7 +23,8 @@ export default function CartSidebar({isVisible, onClose}:CartSidebarProps) {
   if(!isVisible) return null;
 
   const getNumericPrice = (price:string):number =>{
-    return parseInt(price.replace(/[^0-9]/g, ""),10) || 0;
+    const priceString = price.toString();
+    return parseInt(priceString.replace(/[^0-9]/g, ""),10) || 0;
   }
   const subtotal = cartItems.reduce((total:number, item:CartItem)=> total + getNumericPrice(item.price) * (item.quantity || 0),0);
  
@@ -49,7 +50,7 @@ export default function CartSidebar({isVisible, onClose}:CartSidebarProps) {
         <div className="mt-6 space-y-6">
           {cartItems.map((item:CartItem)=> (
           <div key={item.title} className="flex items-center space-x-4 cart-item-hover-effect">
-            <Image src={item.image} alt={item.title} className="w-20 h-20" />
+            <Image src={item.imageUrl} alt={item.title} width={80} height={80}/>
             <div className="flex-grow">
               <h3 className="font-normal text-base">{item.title}</h3>
               <div className="flex items-center gap-4">

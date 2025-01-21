@@ -2,19 +2,29 @@
   "name": "my-project",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "import-data": "node script/importData.js"
   },
   "dependencies": {
+    "@sanity/client": "^6.25.0",
+    "@sanity/image-url": "^1.1.0",
+    "@sanity/vision": "^3.70.0",
+    "axios": "^1.7.9",
     "country-list": "^2.3.0",
     "country-state-city": "^3.2.1",
-    "next": "15.0.4",
+    "dotenv": "^16.4.7",
+    "next": "^15.1.5",
+    "next-sanity": "^9.8.39",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.0"
+    "react-router-dom": "^7.1.0",
+    "sanity": "^3.70.0",
+    "styled-components": "^6.1.14"
   },
   "devDependencies": {
     "@types/country-list": "^2.1.4",

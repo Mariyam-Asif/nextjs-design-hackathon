@@ -6,66 +6,92 @@ import display from "@/public/display.svg";
 import view from "@/public/view-list.svg";
 import line from "@/public/line-3.png";
 import ProductCard from "../components/ProductCard";
-import syltherine from "@/public/syltherine.png";
-import leviosa from "@/public/leviosa.png";
-import lolita from "@/public/lolita.png";
-import respira from "@/public/respira.png";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Guarantees from "../components/Guarantees";
 import Banner from "../components/Banner";
 import { useCart } from "../CartContext";
 import CartSidebar from "../sidebar";
+import sanityClient from "@sanity/client";
+
+const sanity = sanityClient({
+  projectId: "xmtoqufw",
+  dataset: "production",
+  apiVersion: "2023-10-01",
+  useCdn: true,
+});
+
+interface Product {
+  _id: string;
+  title: string;
+  price: string;
+  description: string;
+  discountPercentage: string;
+  imageUrl: string;
+  productImage: {
+    asset: {
+      _ref: string;
+    };
+  };
+  tags: string[];
+  stockStatus: string;
+}
 
 const ShopPage = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
-  const {addToCart} = useCart();
+  const { addToCart } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
 
-  const initialProducts = [
-    {
-      image: syltherine,
-      title: "Sylthrine",
-      description: "Stylish cafe chair",
-      price: "Rp 2.500.000",
-      oldPrice: "Rp 3.500.000",
-      discount: "-30%",
-    },
-    {
-      image: leviosa,
-      title: "Leviosa",
-      description: "Stylish cafe chair",
-      price: "Rp 2.500.000",
-    },
-    {
-      image: lolita,
-      title: "Lolita",
-      description: "Luxury big sofa",
-      price: "Rp 7.000.000",
-      oldPrice: "Rp 14.000.000",
-      discount: "-50%",
-    },
-    {
-      image: respira,
-      title: "Respira",
-      description: "Outdoor bar table and stool",
-      price: "Rp 4.000.000",
-    },
-  ];
+  const fetchProducts = async () => {
+    try {
+      const query = `
+      *[_type == "product"]{
+      _id,
+      title,
+      price,
+      description,
+      discountPercentage,
+      "imageUrl": productImage.asset->url,
+      tags,
+      stockStatus
+      }`;
+      const data = await sanity.fetch(query);
+      setProducts(data);
+      setSortedProducts(data);
+    } catch (error) {
+      console.log("Error fetching products:", error);
+    }
+  };
 
-  const products = [
-    ...initialProducts,
-    ...initialProducts,
-    ...initialProducts,
-    ...initialProducts,
-    ...initialProducts,
-    ...initialProducts,
-    ...initialProducts,
-    ...initialProducts,
-  ];
+  const truncateDescription = (description: string) => {
+    return description.length > 100
+      ? description.substring(0, 100) + "..."
+      : description;
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-  const handleAddToCart = (product: {title:string; price:string})=>{
+  useEffect(()=>{
+    let filteredProducts = [...products];
+    if (showAvailableOnly){
+      filteredProducts = filteredProducts.filter(
+        (product) => product.stockStatus === 'inStock'
+      );
+    }
+    setSortedProducts(filteredProducts);
+    setCurrentPage(1);
+  }, [showAvailableOnly])
+
+  const handleAddToCart = (product: { title: string; price: string }) => {
     addToCart(product);
     setSidebarVisible(true);
-  }
+  };
+
+  const parsePrice = (price: string | number) => {
+    const priceString = typeof price === "string" ? price : String(price);
+    return parseFloat(priceString.replace(/[^\d.-]/g, "").replace(",", ""));
+  };
   const [currentPage, setCurrentPage] = useState(1);
   const [productPage, setProductPage] = useState(16);
   const [sortedProducts, setSortedProducts] = useState(products);
@@ -87,7 +113,7 @@ const ShopPage = () => {
   ) => {
     const value = parseInt(e.target.value, 10);
     // Validation of valid number and greater than 0
-    if(isNaN(value) || value<=0){
+    if (isNaN(value) || value <= 0) {
       setProductPage(16);
       setErrorMessage("Incorrect number");
     } else {
@@ -100,8 +126,9 @@ const ShopPage = () => {
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const sortValue = e.target.value;
     let sorted = [...products];
-    const parsePrice = (price: string) => {
-      return parseFloat(price.replace(/[^\d.-]/g, "").replace(",", ""));
+    const parsePrice = (price: string | number) => {
+      const priceString = typeof price === "string" ? price : String(price);
+      return parseFloat(priceString.replace(/[^\d.-]/g, "").replace(",", ""));
     };
     if (sortValue === "low-to-high") {
       sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
@@ -120,11 +147,12 @@ const ShopPage = () => {
 
   return (
     <div className="relative">
-      <Banner pageName="Shop" showLogo={false}/>
+      <Banner pageName="Shop" showLogo={false} />
       {/* Filter Section */}
       <div className="bg-[#F9F1E7] flex flex-col sm:flex-row justify-between sm:px-[50px] md:px-[70px] lg:px-[100px] py-6 sm:py-8 lg:py-[33px]">
         {/*Left Side */}
         <div className="flex justify-center items-center w-full sm:w-auto">
+         
           <div className="flex flex-wrap items-center justify-between gap-3 text-xl font-normal hover:scale-105 transition-all duration-300 ease-in-out">
             <Image
               src={filter}
@@ -156,6 +184,16 @@ const ShopPage = () => {
         </div>
         {/* Right Side */}
         <div className="flex items-center justify-center gap-4 mt-2">
+           {/* Toggle Availability */}
+           <label className="flex items-center gap-3">
+            <input
+            type="checkbox"
+            checked={showAvailableOnly}
+            onChange={(e)=>setShowAvailableOnly(e.target.checked)}
+            className="w-5 h-5 accent-[#B88E2F]"
+            />
+            <span className="text-lg sm:text-xl font-normal">In Stock</span>
+          </label>
           {/* Show Field */}
           <div className="flex items-center gap-4">
             <span className="font-normal text-lg sm:text-xl">Show</span>
@@ -167,13 +205,15 @@ const ShopPage = () => {
             />
           </div>
 
-{/* Display Error Message */}
-{errorMessage && (
-  <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
-)}
-          
+          {/* Display Error Message */}
+          {errorMessage && (
+            <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
+          )}
+
           {/* Sort By Field */}
+          
           <div className="flex items-center gap-4">
+            
             <span className="font-normal text-lg sm:text-xl">Sort by</span>
             <select
               className="w-32 h-12 px-4 bg-white border-none focus:outline-none focus:ring-2 focus:ring-[#B88E2F] transition-all duration-200 text-[#9F9F9F] font-normal text-xl"
@@ -197,23 +237,23 @@ const ShopPage = () => {
       </div>
       {/*Product Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-20 px-[8%] my-12">
-        {currentProducts.map((product, index) => (
+        {currentProducts.map((product) => (
           <ProductCard
-            key={index}
-            image={product.image}
+            key={product._id}
+            imageUrl={product.imageUrl}
             title={product.title}
-            description={product.description}
-            price={product.price}
-            oldPrice={product.oldPrice}
-            discount={product.discount}
-            onAddToCart={()=>handleAddToCart(product)}
+            description={truncateDescription(product.description)}
+            price={`Rs ${parsePrice(product.price)}`}
+            stockStatus={product.stockStatus}
+            discountPercentage={product.discountPercentage}
+            onAddToCart={() => handleAddToCart(product)}
           />
         ))}
       </div>
       {/* Cart Sidebar */}
       <CartSidebar
-      isVisible={isSidebarVisible}
-      onClose={()=>setSidebarVisible(false)}
+        isVisible={isSidebarVisible}
+        onClose={() => setSidebarVisible(false)}
       />
       <div className="flex justify-center items-center gap-[38px] mt-[40px] mb-[85px]">
         {[...Array(totalPages)].map((_, index) => (
@@ -228,17 +268,15 @@ const ShopPage = () => {
           </button>
         ))}
         {/* Next Button */}
-      {currentPage < totalPages && (
-        <div className="flex justify-center">
-          <button className="pagination px-7 py-4"
-          onClick={handleNextPage}
-          >
-           Next
-          </button>
-        </div>
-      )}
+        {currentPage < totalPages && (
+          <div className="flex justify-center">
+            <button className="pagination px-7 py-4" onClick={handleNextPage}>
+              Next
+            </button>
+          </div>
+        )}
       </div>
-      
+
       <Guarantees />
     </div>
   );
