@@ -2,7 +2,7 @@
 
 import { client } from "@/sanity/lib/client";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 
 interface Product {
@@ -34,7 +34,7 @@ const fetchProducts = async (query: string) => {
 const truncateDescription = (description:string)=>{
     return description.length > 100 ? description.substring(0,100) + "..." : description;
 }
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("query");
   const [products, setProducts] = useState<Product[]>([]);
@@ -79,4 +79,12 @@ const handleAddToCart = (item:{id:string; title:string; price:string})=>{
       )}
     </div>
   );
+}
+
+export default function SearchPage(){
+  return(
+    <Suspense fallback={<p>Loading page...</p>}>
+    <SearchPageContent/>
+    </Suspense>
+  )
 }
