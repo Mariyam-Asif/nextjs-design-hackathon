@@ -87,6 +87,8 @@ export default function Navbar() {
           src={profile}
           alt="profile icon"
           className="icon transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+          width={24}
+          height={24}
         />
         <button onClick={toggleSearch} className="relative">
           <Image

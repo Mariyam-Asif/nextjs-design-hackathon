@@ -28,8 +28,8 @@
     @apply py-4 px-6;
   }
   .icon {
-    width: 23px;
-    height: 20px;
+    width: auto;
+    height: auto;
   }
   .img {
     object-fit: cover;
