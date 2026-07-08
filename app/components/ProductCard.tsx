@@ -1,33 +1,54 @@
 import Image, { StaticImageData } from "next/image";
+import Link from "next/link";
 import share from "@/public/share-icon.svg";
 import compare from "@/public/compare-icon.svg";
 import like from "@/public/like-icon.svg";
 
 interface ProductCardProps {
+  id: string;
+  slug: string;
   imageUrl: StaticImageData | string;
   title: string;
   description: string;
   price: string;
+  currency: string;
   oldPrice?: string;
   discountPercentage?: string;
   stockStatus: string;
-  onAddToCart: (item: { id: string; title: string; price: string }) => void;
+  stockQuantity?: number;
+  onAddToCart: (item: { id: string; title: string; price: string; currency: string; imageUrl: string; stockQuantity?: number; stockStatus?: string }) => void;
 }
 const ProductCard = ({
+  id,
+  slug,
   imageUrl,
   title,
   description,
   price,
+  currency,
   oldPrice,
   discountPercentage,
   stockStatus,
+  stockQuantity,
   onAddToCart,
 }: ProductCardProps) => {
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Prevent adding out of stock items
+    if (stockStatus === 'outOfStock') {
+      return;
+    }
+
     onAddToCart({
-      id: title,
+      id,
       title,
       price,
+      currency,
+      imageUrl: typeof imageUrl === 'string' ? imageUrl : imageUrl.src,
+      stockQuantity,
+      stockStatus,
     });
   };
   const stockTitle =
@@ -39,7 +60,7 @@ const ProductCard = ({
           ? "Out Of Stock"
           : "";
   return (
-    <div className="relative flex flex-col items-start group">
+    <Link href={`/shop/${slug}`} className="relative flex flex-col items-start group block">
       <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative">
         <Image
           src={imageUrl}
@@ -58,10 +79,10 @@ const ProductCard = ({
         <p className="font-semibold text-xl text-[#3A3A3A]">{title}</p>
         <p className="font-medium text-sm text-[#898989]">{description}</p>
         <div className="flex flex-row gap-4 mt-2">
-          <p className="font-semibold text-lg text-[#3A3A3A]">{price}</p>
+          <p className="font-semibold text-lg text-[#3A3A3A]">{currency} {price}</p>
           {oldPrice && (
             <p className="text-[#B0B0B0] text-sm font-normal line-through">
-              {oldPrice}
+              {currency} {oldPrice}
             </p>
           )}
           <p
@@ -75,10 +96,15 @@ const ProductCard = ({
       {/* Hover section with add to cart button */}
       <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[260px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
         <button
-          className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105"
+          className={`font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform ${
+            stockStatus === 'outOfStock'
+              ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+              : 'bg-white text-[#B88E2F] hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105'
+          }`}
           onClick={handleAddToCart}
+          disabled={stockStatus === 'outOfStock'}
         >
-          Add To Cart
+          {stockStatus === 'outOfStock' ? 'Out of Stock' : 'Add To Cart'}
         </button>
         <div className="flex flex-row gap-5 text-white">
           <div className="flex items-center space-x-1">
@@ -99,7 +125,7 @@ const ProductCard = ({
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

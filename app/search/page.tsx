@@ -4,6 +4,8 @@ import { client } from "@/sanity/lib/client";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import { useCart } from "../CartContext";
+import CartSidebar from "../sidebar";
 
 interface Product {
   _id: string;
@@ -16,7 +18,10 @@ interface Product {
   title: string;
   description: string;
   price: string;
+  currency: string;
   stockStatus: string;
+  stockQuantity: number;
+  slug: string;
 }
 
 const fetchProducts = async (query: string) => {
@@ -26,7 +31,10 @@ const fetchProducts = async (query: string) => {
     title,
     description,
     price,
-    stockStatus
+    currency,
+    stockStatus,
+    stockQuantity,
+    "slug": slug.current
     }`;
   const res = await client.fetch(groqQuery);
   return res;
@@ -39,44 +47,157 @@ function SearchPageContent() {
   const query = searchParams.get("query");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (query) {
+      setLoading(true);
+      setError("");
       fetchProducts(query)
         .then((data) => {
           setProducts(data);
           setLoading(false);
         })
-        .catch(() => setLoading(false));
+        .catch((err) => {
+          console.error("Search error:", err);
+          setError("Unable to search products. Please try again.");
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
   }, [query]);
-const handleAddToCart = (item:{id:string; title:string; price:string})=>{
-    console.log("Added to cart:", item);
+
+const handleAddToCart = (item:{
+  id:string;
+  title:string;
+  price:string;
+  currency: string;
+  imageUrl: string;
+  stockQuantity?: number;
+  stockStatus?: string;
+})=>{
+    addToCart(item);
+    setSidebarVisible(true);
 }
+
+  const retrySearch = () => {
+    if (query) {
+      setLoading(true);
+      setError("");
+      fetchProducts(query)
+        .then((data) => {
+          setProducts(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Search error:", err);
+          setError("Unable to search products. Please try again.");
+          setLoading(false);
+        });
+    }
+  };
+
   return (
-    <div>
-      <h1 className="font-bold text-2xl text-[#333333] ml-4 mb-4 mt-2">Search Results for &quot;{query}&quot;</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 justify-items-center">
-          {products.length ? (
-              products.map((product) => (
-                <ProductCard
-                key={product._id}
-                imageUrl={product.imageUrl}
-                title={product.title}
-                description={truncateDescription(product.description)}
-                price={`Rs ${product.price}`}
-                stockStatus={product.stockStatus}
-                onAddToCart={handleAddToCart}
-                />
-              ))
-          ) : (
-            <p>No products found.</p>
-          )}
+    <div className="min-h-screen px-6 py-8">
+      <h1 className="font-bold text-2xl text-[#333333] mb-6">
+        Search Results for &quot;{query}&quot;
+      </h1>
+
+      {/* Error State */}
+      {error && (
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <svg
+              className="w-16 h-16 text-red-500 mx-auto mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3 className="text-xl font-semibold text-red-800 mb-2">{error}</h3>
+            <button
+              onClick={retrySearch}
+              className="mt-4 bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
       )}
+
+      {/* Loading State */}
+      {loading && !error && (
+        <div className="flex justify-center items-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B88E2F] mx-auto mb-4"></div>
+            <p className="text-lg text-gray-600">Searching products...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && products.length === 0 && (
+        <div className="text-center py-12">
+          <svg
+            className="w-24 h-24 mx-auto mb-4 text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.5"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <h3 className="text-2xl font-semibold mb-2">No Products Found</h3>
+          <p className="text-gray-600 mb-6">
+            No products found for &quot;{query}&quot;. Try different keywords.
+          </p>
+          <a
+            href="/shop"
+            className="inline-block bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors"
+          >
+            Browse All Products
+          </a>
+        </div>
+      )}
+
+      {/* Products Grid */}
+      {!loading && !error && products.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+          {products.map((product) => (
+            <ProductCard
+              key={product._id}
+              id={product._id}
+              slug={product.slug || product._id}
+              imageUrl={product.imageUrl}
+              title={product.title}
+              description={truncateDescription(product.description)}
+              price={product.price}
+              currency={product.currency}
+              stockStatus={product.stockStatus}
+              stockQuantity={product.stockQuantity}
+              onAddToCart={handleAddToCart}
+            />
+          ))}
+        </div>
+      )}
+
+      <CartSidebar
+        isVisible={isSidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+      />
     </div>
   );
 }

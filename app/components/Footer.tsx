@@ -47,6 +47,9 @@ export default function Footer() {
               </h3>
               <ul className="grid grid-cols-1 md:flex md:flex-col text-center md:text-start gap-5 md:gap-[46px] text-base font-medium">
                 <li className="hover:text-gray-700 transition">
+                  <Link href="/orders">My Orders</Link>
+                </li>
+                <li className="hover:text-gray-700 transition">
                   <Link href="/payment">Payment Options</Link>
                 </li>
                 <li className="hover:text-gray-700 transition">

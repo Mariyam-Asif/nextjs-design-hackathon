@@ -12,6 +12,28 @@ export const product = defineType({
             type: "string"
         },
         {
+            name: "slug",
+            title: "Slug",
+            type: "slug",
+            options: {
+                source: "title",
+                maxLength: 96,
+                slugify: (input: string) => {
+                    return input
+                        .toLowerCase()
+                        .trim()
+                        .split(/\s+/) // Split by whitespace
+                        .slice(0, 4) // Take first 4 words
+                        .join('-') // Join with hyphens
+                        .replace(/[^\w\-]+/g, '') // Remove all non-word chars except hyphens
+                        .replace(/\-\-+/g, '-') // Replace multiple hyphens with single hyphen
+                        .replace(/^-+/, '') // Trim hyphens from start
+                        .replace(/-+$/, ''); // Trim hyphens from end
+                },
+            },
+            validation: (rule) => rule.required(),
+        },
+        {
             name:"description",
             type:"text",
             validation: (rule) => rule.required(),
@@ -28,6 +50,22 @@ export const product = defineType({
             type: "number",
             validation: (rule) => rule.required(),
             title: "Price",
+        },
+        {
+            name: "currency",
+            type: "string",
+            title: "Currency",
+            options: {
+                list: [
+                    { title: "Pakistani Rupee (Rs)", value: "Rs" },
+                    { title: "US Dollar ($)", value: "$" },
+                    { title: "Euro (€)", value: "€" },
+                    { title: "British Pound (£)", value: "£" },
+                    { title: "Indian Rupee (₹)", value: "₹" },
+                ],
+            },
+            initialValue: "$",
+            validation: (rule) => rule.required(),
         },
         {
             name: "tags",
@@ -64,6 +102,14 @@ export const product = defineType({
                     ],
                 },
                 initialValue: "inStock"
+        },
+        {
+            name: "stockQuantity",
+            type: "number",
+            title: "Stock Quantity",
+            validation: (rule) => rule.required().min(0),
+            initialValue: 0,
+            description: "Available quantity in stock. Set to 0 for out of stock items."
         },
     ],
 });

@@ -1,435 +1,192 @@
-import Image from "next/image";
-import syltherine from "@/public/syltherine.png";
-import leviosa from "@/public/leviosa.png";
-import lolita from "@/public/lolita.png";
-import respira from "@/public/respira.png";
-import share from "@/public/share-icon.svg";
-import compare from "@/public/compare-icon.svg";
-import like from "@/public/like-icon.svg";
-import lamp from "@/public/night-lamp.png";
-import muggo from "@/public/muggo.png";
-import pingky from "@/public/pingky.png";
-import sofa from "@/public/sofa.png";
+"use client";
+
+import { useEffect, useState } from "react";
+import ProductCard from "./components/ProductCard";
+import { useCart } from "./CartContext";
+import CartSidebar from "./sidebar";
 import Link from "next/link";
 
+interface Product {
+  _id: string;
+  title: string;
+  price: string;
+  currency: string;
+  description: string;
+  discountPercentage: string;
+  imageUrl: string;
+  tags: string[];
+  stockStatus: string;
+  stockQuantity: number;
+  slug: string;
+  isNew: boolean;
+}
+
 export default function Products() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      // Fetch from API route instead of direct Sanity import
+      const response = await fetch('/api/products?limit=8');
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setError("Unable to load products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddToCart = (item: {
+    id: string;
+    title: string;
+    price: string;
+    currency: string;
+    imageUrl: string;
+    stockQuantity?: number;
+    stockStatus?: string;
+  }) => {
+    addToCart(item);
+    setSidebarVisible(true);
+  };
+
+  const truncateDescription = (description: string) => {
+    return description.length > 50
+      ? description.substring(0, 50) + "..."
+      : description;
+  };
+
+  const parsePrice = (price: string | number) => {
+    const priceString = typeof price === "string" ? price : String(price);
+    return parseFloat(priceString.replace(/[^\d.-]/g, "").replace(",", ""));
+  };
+
   return (
     <div>
       <section className="px-[8%] mb-8">
         <h2 className="font-bold text-4xl text-center text-[#3A3A3A] mb-8">
           Our Products
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-20">
-          <div className="relative flex flex-col items-start group">
-            <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative">
-              <Image
-                src={syltherine}
-                alt="Syltherine stylish cafe chair"
-                className="img"
-              />
-              {/* Discount badge */}
-              <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-12 h-12 flex items-center justify-center text-base font-medium">
-                -30%
-              </div>
-            </div>
-            <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[260px]">
-              <p className="font-semibold text-xl text-[#3A3A3A]">Syltherine</p>
-              <p className="font-medium text-sm text-[#898989]">
-                Stylish cafe chair
-              </p>
-              <div className="flex flex-row gap-4 mt-2">
-                <p className="font-semibold text-lg text-[#3A3A3A]">
-                  Rp 2.500.000
-                </p>
-                <p className="text-[#B0B0B0] text-sm font-normal line-through">
-                  Rp 3.500.000
-                </p>
-              </div>
-            </div>
 
-            {/* Hover section with add to cart button */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[260px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
-              <button className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105 ">
-              <Link href="/cart">Add To Cart</Link>
-              </button>
-              <div className="flex flex-row gap-5 text-white">
-                <div className="flex items-center space-x-1">
-                  <Image src={share} alt="share" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Share
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={compare} alt="compare" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Compare
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={like} alt="like" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Like
-                  </span>
-                </div>
-              </div>
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B88E2F] mx-auto mb-4"></div>
+              <p className="text-lg text-gray-600">Loading products...</p>
             </div>
           </div>
+        )}
 
-          <div className="relative flex flex-col items-start group">
-            <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative">
-              <Image
-                src={leviosa}
-                alt="Leviosa stylish cafe chair"
-                className="img"
-              />
-            </div>
-            <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[260px]">
-              <p className="font-semibold text-xl text-[#3A3A3A]">Leviosa</p>
-              <p className="font-medium text-sm text-[#898989]">
-                Stylish cafe chair
-              </p>
-              <p className="font-semibold text-lg text-[#3A3A3A]">
-                Rp 2.500.000
-              </p>
-            </div>
-            {/* Hover section with add to cart button */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[260px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
-              <button className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105 ">
-              <Link href="/cart">Add To Cart</Link>
+        {/* Error State */}
+        {error && (
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+              <svg
+                className="w-16 h-16 text-red-500 mx-auto mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <h3 className="text-xl font-semibold text-red-800 mb-2">
+                {error}
+              </h3>
+              <button
+                onClick={fetchProducts}
+                className="mt-4 bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors"
+              >
+                Try Again
               </button>
-              <div className="flex flex-row gap-5 text-white">
-                <div className="flex items-center space-x-1">
-                  <Image src={share} alt="share" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Share
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={compare} alt="compare" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Compare
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={like} alt="like" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Like
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
+        )}
 
-          <div className="relative flex flex-col items-start group">
-            <div className="w-full lg:w-[267px] h-[250px] lg:h-[300px] overflow-hidden relative">
-              <Image
-                src={lolita}
-                alt="Lolito luxury big sofa"
-                className="img"
+        {/* Products Grid */}
+        {!loading && !error && products.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-20">
+            {products.map((product) => (
+              <ProductCard
+                key={product._id}
+                id={product._id}
+                slug={product.slug || product._id}
+                imageUrl={product.imageUrl}
+                title={product.title}
+                description={truncateDescription(product.description)}
+                price={parsePrice(product.price).toString()}
+                currency={product.currency}
+                stockStatus={product.stockStatus}
+                stockQuantity={product.stockQuantity}
+                discountPercentage={product.discountPercentage}
+                onAddToCart={handleAddToCart}
               />
-
-              {/* Discount badge */}
-              <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-12 h-12 flex items-center justify-center text-base font-medium">
-                -50%
-              </div>
-            </div>
-            <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[267px]">
-              <p className="font-semibold text-xl text-[#3A3A3A]">Lolito</p>
-              <p className="font-medium text-sm text-[#898989]">
-                Luxury big sofa
-              </p>
-              <div className="flex flex-row gap-6">
-                <p className="font-semibold text-lg text-[#3A3A3A]">
-                  Rp 7.000.000
-                </p>
-                <p className="text-[#B0B0B0] text-sm font-normal line-through">
-                  Rp 14.000.000
-                </p>
-              </div>
-            </div>
-            {/* Hover section with add to cart button */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[267px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
-              <button className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105 ">
-              <Link href="/cart">Add To Cart</Link>
-              </button>
-              <div className="flex flex-row gap-5 text-white">
-                <div className="flex items-center space-x-1">
-                  <Image src={share} alt="share" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Share
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={compare} alt="compare" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Compare
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={like} alt="like" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Like
-                  </span>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
+        )}
 
-          <div className="relative flex flex-col items-start group">
-            <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative">
-              <Image
-                src={respira}
-                alt="Respira outdoor bar table and stool"
-                className="img"
+        {/* Empty State */}
+        {!loading && !error && products.length === 0 && (
+          <div className="text-center py-12">
+            <svg
+              className="w-24 h-24 mx-auto mb-4 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
               />
-              <div className="absolute top-6 right-6 bg-[#2EC1AC] text-white rounded-full w-12 h-12 flex items-center justify-center text-base font-medium">
-                New
-              </div>
-            </div>
-            <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[260px]">
-              <p className="font-semibold text-xl text-[#3A3A3A]">Respira</p>
-              <p className="font-medium text-sm text-[#898989]">
-                Outdoor bar table and stool
-              </p>
-              <p className="font-semibold text-lg text-[#3A3A3A]">Rp 500.000</p>
-            </div>
-            {/* Hover section with add to cart button */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[260px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
-              <button className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105 ">
-              <Link href="/cart">Add To Cart</Link>
-              </button>
-              <div className="flex flex-row gap-5 text-white">
-                <div className="flex items-center space-x-1">
-                  <Image src={share} alt="share" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Share
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={compare} alt="compare" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Compare
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={like} alt="like" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Like
-                  </span>
-                </div>
-              </div>
-            </div>
+            </svg>
+            <h3 className="text-2xl font-semibold mb-2">
+              No Products Available
+            </h3>
+            <p className="text-gray-600">
+              No products are available at this time.
+            </p>
           </div>
-        </div>
+        )}
+
+        {/* Show More Button */}
+        {!loading && !error && products.length > 0 && (
+          <div className="flex justify-center items-center mt-8">
+            <Link href="/shop">
+              <button className="bg-white text-[#B88E2F] text-base font-semibold border-[#B88E2F] border py-3 pr-[74px] pl-[82px] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:bg-[#B88E2F] hover:text-white">
+                Show More
+              </button>
+            </Link>
+          </div>
+        )}
       </section>
-      <section className="px-[8%] mb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-20">
-          <div className="relative flex flex-col items-start group">
-            <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative">
-              <Image
-                src={lamp}
-                alt="Syltherine stylish cafe chair"
-                className="img"
-              />
-            </div>
-            <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[260px]">
-              <p className="font-semibold text-xl text-[#3A3A3A]">Syltherine</p>
-              <p className="font-medium text-sm text-[#898989]">
-                Stylish cafe chair
-              </p>
-              <div className="flex flex-row gap-4 mt-2">
-                <p className="font-semibold text-lg text-[#3A3A3A]">
-                  Rp 2.500.000
-                </p>
-                <p className="text-[#B0B0B0] text-sm font-normal line-through">
-                  Rp 3.500.000
-                </p>
-              </div>
-            </div>
 
-            {/* Hover section with add to cart button */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[260px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
-              <button className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105 ">
-              <Link href="/cart">Add To Cart</Link>
-              </button>
-              <div className="flex flex-row gap-5 text-white">
-                <div className="flex items-center space-x-1">
-                  <Image src={share} alt="share" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Share
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={compare} alt="compare" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Compare
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={like} alt="like" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Like
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative flex flex-col items-start group">
-            <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative">
-              <Image
-                src={muggo}
-                alt="Leviosa stylish cafe chair"
-                className="img"
-              />
-              <div className="absolute top-6 right-6 bg-[#2EC1AC] text-white rounded-full w-12 h-12 flex items-center justify-center text-base font-medium">
-                New
-              </div>
-            </div>
-            <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[260px]">
-              <p className="font-semibold text-xl text-[#3A3A3A]">Leviosa</p>
-              <p className="font-medium text-sm text-[#898989]">
-                Stylish cafe chair
-              </p>
-              <p className="font-semibold text-lg text-[#3A3A3A]">
-                Rp 2.500.000
-              </p>
-            </div>
-            {/* Hover section with add to cart button */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[260px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
-              <button className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105 ">
-              <Link href="/cart">Add To Cart</Link>
-              </button>
-              <div className="flex flex-row gap-5 text-white">
-                <div className="flex items-center space-x-1">
-                  <Image src={share} alt="share" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Share
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={compare} alt="compare" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Compare
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={like} alt="like" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Like
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative flex flex-col items-start group">
-            <div className="w-full lg:w-[267px] h-[250px] lg:h-[300px] overflow-hidden relative">
-              <Image
-                src={pingky}
-                alt="Lolito luxury big sofa"
-                className="img"
-              />
-
-              {/* Discount badge */}
-              <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-12 h-12 flex items-center justify-center text-base font-medium">
-                -50%
-              </div>
-            </div>
-            <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[267px]">
-              <p className="font-semibold text-xl text-[#3A3A3A]">Lolito</p>
-              <p className="font-medium text-sm text-[#898989]">
-                Luxury big sofa
-              </p>
-              <div className="flex flex-row gap-6">
-                <p className="font-semibold text-lg text-[#3A3A3A]">
-                  Rp 7.000.000
-                </p>
-                <p className="text-[#B0B0B0] text-sm font-normal line-through">
-                  Rp 14.000.000
-                </p>
-              </div>
-            </div>
-            {/* Hover section with add to cart button */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[267px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
-              <button className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105 ">
-              <Link href="/cart">Add To Cart</Link>
-              </button>
-              <div className="flex flex-row gap-5 text-white">
-                <div className="flex items-center space-x-1">
-                  <Image src={share} alt="share" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Share
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={compare} alt="compare" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Compare
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={like} alt="like" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Like
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative flex flex-col items-start group">
-            <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative">
-              <Image
-                src={sofa}
-                alt="Respira outdoor bar table and stool"
-                className="img"
-              />
-              <div className="absolute top-6 right-6 bg-[#2EC1AC] text-white rounded-full w-12 h-12 flex items-center justify-center text-base font-medium">
-                New
-              </div>
-            </div>
-            <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[260px]">
-              <p className="font-semibold text-xl text-[#3A3A3A]">Respira</p>
-              <p className="font-medium text-sm text-[#898989]">
-                Outdoor bar table and stool
-              </p>
-              <p className="font-semibold text-lg text-[#3A3A3A]">Rp 500.000</p>
-            </div>
-            {/* Hover section with add to cart button */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[260px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-80 transition-opacity duration-300 bg-[#3A3A3A] p-4 space-y-3 z-10">
-              <button className="bg-white text-[#B88E2F] font-semibold text-base px-7 py-3 transition-transform duration-300 ease-in-out transform hover:scale-x-105 hover:bg-[#B88E2F] hover:text-white hover:scale-105 ">
-              <Link href="/cart">Add To Cart</Link>
-              </button>
-              <div className="flex flex-row gap-5 text-white">
-                <div className="flex items-center space-x-1">
-                  <Image src={share} alt="share" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Share
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={compare} alt="compare" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Compare
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Image src={like} alt="like" className="w-4 h-4" />
-                  <span className="text-base font-semibold cursor-pointer">
-                    Like
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-center items-center mt-8">
-          <button className="bg-white text-[#B88E2F] text-base font-semibold  border-[#B88E2F] border py-3 pr-[74px] pl-[82px] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:bg-[#B88E2F] hover:text-white">
-            Show More
-          </button>
-        </div>
-      </section>
+      {/* Cart Sidebar */}
+      <CartSidebar
+        isVisible={isSidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+      />
     </div>
   );
 }

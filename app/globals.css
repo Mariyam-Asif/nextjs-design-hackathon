@@ -4,6 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  /* Screen reader only - visually hidden but accessible to assistive technology */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
 @layer base {
   * {
     font-family: "Poppins", sans-serif;
@@ -392,5 +407,35 @@ border: 1px solid #b88e2f;
       width: 24px;
       height: 24px;
     }
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print,
+  nav,
+  footer,
+  header {
+    display: none !important;
+  }
+
+  body {
+    margin: 0;
+    padding: 20px;
+  }
+
+  .print-container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Ensure page breaks are handled properly */
+  h2, h3 {
+    page-break-after: avoid;
+  }
+
+  /* Avoid breaking inside important content blocks */
+  .bg-white.border {
+    page-break-inside: avoid;
   }
 }

@@ -11,19 +11,13 @@ import Guarantees from "../components/Guarantees";
 import Banner from "../components/Banner";
 import { useCart } from "../CartContext";
 import CartSidebar from "../sidebar";
-import sanityClient from "@sanity/client";
-
-const sanity = sanityClient({
-  projectId: "xmtoqufw",
-  dataset: "production",
-  apiVersion: "2023-10-01",
-  useCdn: true,
-});
+import { client } from "@/sanity/lib/client";
 
 interface Product {
   _id: string;
   title: string;
   price: string;
+  currency: string;
   description: string;
   discountPercentage: string;
   imageUrl: string;
@@ -34,6 +28,8 @@ interface Product {
   };
   tags: string[];
   stockStatus: string;
+  stockQuantity: number;
+  slug: string;
 }
 
 const ShopPage = () => {
@@ -41,25 +37,35 @@ const ShopPage = () => {
   const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchProducts = async () => {
     try {
+      setLoading(true);
+      setError("");
       const query = `
       *[_type == "product"]{
       _id,
       title,
       price,
+      currency,
       description,
       discountPercentage,
       "imageUrl": productImage.asset->url,
       tags,
-      stockStatus
+      stockStatus,
+      stockQuantity,
+      "slug": slug.current
       }`;
-      const data = await sanity.fetch(query);
+      const data = await client.fetch(query);
       setProducts(data);
       setSortedProducts(data);
     } catch (error) {
-      console.log("Error fetching products:", error);
+      console.error("Error fetching products:", error);
+      setError("Unable to load products. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,8 +89,16 @@ const ShopPage = () => {
     setCurrentPage(1);
   }, [showAvailableOnly, products])
 
-  const handleAddToCart = (product: { title: string; price: string }) => {
-    addToCart(product);
+  const handleAddToCart = (item: {
+    id: string;
+    title: string;
+    price: string;
+    currency: string;
+    imageUrl: string;
+    stockQuantity?: number;
+    stockStatus?: string;
+  }) => {
+    addToCart(item);
     setSidebarVisible(true);
   };
 
@@ -148,8 +162,50 @@ const ShopPage = () => {
   return (
     <div className="relative">
       <Banner pageName="Shop" showLogo={false} />
-      {/* Filter Section */}
-      <div className="bg-[#F9F1E7] flex flex-col sm:flex-row justify-between sm:px-[50px] md:px-[70px] lg:px-[100px] py-6 sm:py-8 lg:py-[33px]">
+
+      {/* Error State */}
+      {error && (
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <svg
+              className="w-16 h-16 text-red-500 mx-auto mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3 className="text-xl font-semibold text-red-800 mb-2">{error}</h3>
+            <button
+              onClick={fetchProducts}
+              className="mt-4 bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && !error && (
+        <div className="flex justify-center items-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B88E2F] mx-auto mb-4"></div>
+            <p className="text-lg text-gray-600">Loading products...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Content - Only show if not loading and no error */}
+      {!loading && !error && (
+        <>
+          {/* Filter Section */}
+          <div className="bg-[#F9F1E7] flex flex-col sm:flex-row justify-between sm:px-[50px] md:px-[70px] lg:px-[100px] py-6 sm:py-8 lg:py-[33px]">
         {/*Left Side */}
         <div className="flex justify-center items-center w-full sm:w-auto">
          
@@ -236,17 +292,53 @@ const ShopPage = () => {
         </div>
       </div>
       {/*Product Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-20 px-[8%] my-12">
+      {sortedProducts.length === 0 ? (
+        <div className="text-center py-12">
+          <svg
+            className="w-24 h-24 mx-auto mb-4 text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.5"
+              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+            />
+          </svg>
+          <h3 className="text-2xl font-semibold mb-2">No Products Available</h3>
+          <p className="text-gray-600 mb-6">
+            {showAvailableOnly
+              ? "No products are currently in stock. Try removing the filter."
+              : "No products are available at this time."}
+          </p>
+          {showAvailableOnly && (
+            <button
+              onClick={() => setShowAvailableOnly(false)}
+              className="bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors"
+            >
+              Show All Products
+            </button>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-20 px-[8%] my-12">
         {currentProducts.map((product) => (
           <ProductCard
             key={product._id}
+            id={product._id}
+            slug={product.slug || product._id}
             imageUrl={product.imageUrl}
             title={product.title}
             description={truncateDescription(product.description)}
-            price={`Rs ${parsePrice(product.price)}`}
+            price={parsePrice(product.price).toString()}
+            currency={product.currency}
             stockStatus={product.stockStatus}
+            stockQuantity={product.stockQuantity}
             discountPercentage={product.discountPercentage}
-            onAddToCart={() => handleAddToCart(product)}
+            onAddToCart={handleAddToCart}
           />
         ))}
       </div>
@@ -276,6 +368,10 @@ const ShopPage = () => {
           </div>
         )}
       </div>
+      </>
+      )}
+      </>
+      )}
 
       <Guarantees />
     </div>
