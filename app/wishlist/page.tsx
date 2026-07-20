@@ -1,5 +1,5 @@
 import { client } from '@/sanity/lib/client';
-import ComparisonClient from './ComparisonClient';
+import WishlistClient from './WishlistClient';
 import { Suspense } from 'react';
 
 interface Product {
@@ -39,7 +39,7 @@ async function fetchProducts(): Promise<Product[]> {
   return client.fetch(query);
 }
 
-export default async function ComparisonPage() {
+export default async function WishlistPage() {
   const products = await fetchProducts();
 
   return (
@@ -48,7 +48,7 @@ export default async function ComparisonPage() {
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#B88E2F]"></div>
       </div>
     }>
-      <ComparisonClient products={products} />
+      <WishlistClient products={products} />
     </Suspense>
   );
 }

@@ -156,14 +156,19 @@ const getNumericPrice = (price:string):number =>{
 
           {/* Cart items are dynamically rendered */}
           {cartItems.length == 0 ? (
-            <div className="flex justify-center items-center mt-8">
-              <p>
-                No products in cart.{" "}
-                <Link href="/shop" className="text-blue-600 relative group">
-                  Shop Now
-                  <span className="absolute inset-x-0 bottom-0 block h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-all duration-300"></span>
-                </Link>
+            <div className="flex flex-col justify-center items-center mt-8 py-12">
+              <h2 id="empty-cart-heading" className="text-2xl font-semibold mb-4" tabIndex={-1}>
+                Your cart is empty
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Start shopping to add items to your cart.
               </p>
+              <Link
+                href="/shop"
+                className="bg-[#B88E2F] text-white px-8 py-3 rounded hover:bg-[#9a7828] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+              >
+                Continue Shopping
+              </Link>
             </div>
           ) : (
             <>
@@ -225,31 +230,44 @@ const getNumericPrice = (price:string):number =>{
                       )}
                     </div>
                     <p className="text-base">{item.currency || '$'} {item.price.toLocaleString()}</p>
-                    <input
-                      type="number"
-                      value={item.quantity}
-                      min="1"
-                      max={item.stockStatus === 'outOfStock' ? item.quantity : maxStock}
-                      disabled={item.stockStatus === 'outOfStock'}
-                      className={`md:w-8 md:h-8 w-14 h-8 border border-[#9F9F9F] text-center rounded-md text-black ${
-                        item.stockStatus === 'outOfStock'
-                          ? 'bg-gray-100 cursor-not-allowed'
-                          : ''
-                      }`}
-                      onChange={(e) =>
-                        handleQuantityChange(item.id, parseInt(e.target.value), maxStock)
-                      }
-                    />
+                    <div className="flex flex-col">
+                      <label htmlFor={`quantity-${item.id}`} className="sr-only">
+                        Quantity of {item.title}
+                      </label>
+                      <input
+                        id={`quantity-${item.id}`}
+                        type="number"
+                        value={item.quantity}
+                        min="1"
+                        max={item.stockStatus === 'outOfStock' ? item.quantity : maxStock}
+                        disabled={item.stockStatus === 'outOfStock'}
+                        className={`md:w-8 md:h-8 w-14 h-8 border border-[#9F9F9F] text-center rounded-md text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 ${
+                          item.stockStatus === 'outOfStock'
+                            ? 'bg-gray-100 cursor-not-allowed'
+                            : ''
+                        }`}
+                        onChange={(e) =>
+                          handleQuantityChange(item.id, parseInt(e.target.value), maxStock)
+                        }
+                        aria-label={`Quantity of ${item.title}`}
+                      />
+                    </div>
                     <div className="hidden md:flex gap-12">
                       <p className={`${item.stockStatus === 'outOfStock' ? 'line-through text-gray-400' : 'text-black'}`}>
                        {item.currency || '$'} {(getNumericPrice(item.price) * item.quantity).toLocaleString()}
                       </p>
-                      <Image
-                        src={delete_icon}
-                        alt="delete item"
-                        className="w-5 h-5 cursor-pointer"
+                      <button
                         onClick={() => handleRemoveItem(item.id)}
-                      />
+                        aria-label={`Remove ${item.title} from cart`}
+                        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                      >
+                        <Image
+                          src={delete_icon}
+                          alt=""
+                          className="w-5 h-5"
+                          aria-hidden="true"
+                        />
+                      </button>
                     </div>
                   </div>
                   {/* Mobile-specific subtotal and delete button */}
@@ -258,12 +276,18 @@ const getNumericPrice = (price:string):number =>{
                     <p className={`flex gap-10 ${item.stockStatus === 'outOfStock' ? 'line-through text-gray-400' : 'text-black'}`}>
                       Subtotal<span className="font-medium">{item.currency || '$'} {(getNumericPrice(item.price) * item.quantity).toLocaleString()}</span>
                     </p>
-                    <Image
-                      src={delete_icon}
-                      alt="delete item"
-                      className="w-5 h-5"
-                      onClick={()=>handleRemoveItem(item.id)}
-                    />
+                    <button
+                      onClick={() => handleRemoveItem(item.id)}
+                      aria-label={`Remove ${item.title} from cart`}
+                      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                    >
+                      <Image
+                        src={delete_icon}
+                        alt=""
+                        className="w-5 h-5"
+                        aria-hidden="true"
+                      />
+                    </button>
                   </div>
                 </div>
               );
@@ -274,9 +298,9 @@ const getNumericPrice = (price:string):number =>{
 
         {/* Right Side */}
         <div className="bg-[#F9F1E7] mb-8 lg:mb-16 px-12 py-4 flex flex-col justify-center items-center">
-          <h3 className="mb-8 lg:mb-[61px] text-center font-semibold text-xl lg:text-2xl">
+          <h2 className="mb-8 lg:mb-[61px] text-center font-semibold text-xl lg:text-2xl">
             Cart Totals
-          </h3>
+          </h2>
           <div className="flex gap-14 mb-8">
             <p className="text-black font-medium text-sm md:text-base">
               Subtotal
@@ -291,9 +315,22 @@ const getNumericPrice = (price:string):number =>{
               {cartItems[0]?.currency || '$'} {getCartTotal().toLocaleString()}
             </p>
           </div>
-          <button className="border border-black rounded-2xl font-normal text-base lg:text-xl text-center py-3 lg:py-[14px] px-14 lg:px-[58px] lg:mb-16 transition-all duration-300 hover:bg-black hover:text-white">
-            <Link href="/checkout">Check Out</Link>
-          </button>
+          {hasOutOfStockItems ? (
+            <button
+              disabled
+              className="border border-gray-400 rounded-2xl font-normal text-base lg:text-xl text-center py-3 lg:py-[14px] px-14 lg:px-[58px] lg:mb-16 text-gray-400 cursor-not-allowed bg-gray-100"
+              aria-label="Checkout disabled. Remove out of stock items to continue."
+            >
+              Check Out
+            </button>
+          ) : (
+            <Link
+              href="/checkout"
+              className="border border-black rounded-2xl font-normal text-base lg:text-xl text-center py-3 lg:py-[14px] px-14 lg:px-[58px] lg:mb-16 transition-all duration-300 hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 inline-block"
+            >
+              Check Out
+            </Link>
+          )}
         </div>
       </div>
       <Guarantees />

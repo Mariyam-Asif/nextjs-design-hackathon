@@ -6,6 +6,8 @@ import { Suspense, useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import { useCart } from "../CartContext";
 import CartSidebar from "../sidebar";
+import Link from "next/link";
+import { announce } from "../utils/announcer";
 
 interface Product {
   _id: string;
@@ -59,11 +61,20 @@ function SearchPageContent() {
         .then((data) => {
           setProducts(data);
           setLoading(false);
+
+          // Announce search results
+          if (data.length === 0) {
+            announce(`No products found for "${query}". Try different keywords.`, "polite");
+          } else {
+            announce(`Found ${data.length} ${data.length === 1 ? 'product' : 'products'} for "${query}".`, "polite");
+          }
         })
         .catch((err) => {
           console.error("Search error:", err);
-          setError("Unable to search products. Please try again.");
+          const errorMsg = "Unable to search products. Please try again.";
+          setError(errorMsg);
           setLoading(false);
+          announce(errorMsg, "assertive");
         });
     } else {
       setLoading(false);
@@ -115,6 +126,7 @@ const handleAddToCart = (item:{
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -123,10 +135,10 @@ const handleAddToCart = (item:{
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h3 className="text-xl font-semibold text-red-800 mb-2">{error}</h3>
+            <h2 className="text-xl font-semibold text-red-800 mb-2">{error}</h2>
             <button
               onClick={retrySearch}
-              className="mt-4 bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors"
+              className="mt-4 bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
             >
               Try Again
             </button>
@@ -136,22 +148,23 @@ const handleAddToCart = (item:{
 
       {/* Loading State */}
       {loading && !error && (
-        <div className="flex justify-center items-center py-20">
+        <div className="flex justify-center items-center py-20" aria-busy="true" aria-live="polite">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B88E2F] mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B88E2F] mx-auto mb-4" aria-hidden="true"></div>
             <p className="text-lg text-gray-600">Searching products...</p>
           </div>
         </div>
       )}
 
       {/* Empty State */}
-      {!loading && !error && products.length === 0 && (
+      {!loading && !error && products.length === 0 && query && (
         <div className="text-center py-12">
           <svg
             className="w-24 h-24 mx-auto mb-4 text-gray-300"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -160,16 +173,16 @@ const handleAddToCart = (item:{
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
-          <h3 className="text-2xl font-semibold mb-2">No Products Found</h3>
+          <h2 className="text-2xl font-semibold mb-2">No Products Found</h2>
           <p className="text-gray-600 mb-6">
             No products found for &quot;{query}&quot;. Try different keywords.
           </p>
-          <a
+          <Link
             href="/shop"
-            className="inline-block bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors"
+            className="inline-block bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
           >
             Browse All Products
-          </a>
+          </Link>
         </div>
       )}
 

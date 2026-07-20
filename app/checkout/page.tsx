@@ -11,6 +11,7 @@ import { useCart } from "../CartContext";
 import { createOrder } from "../actions/orderActions";
 import { validateCheckoutForm } from "../utils/orderUtils";
 import { client } from "@/sanity/lib/client";
+import { announce } from "../utils/announcer";
 
 interface FormData {
   firstName: string;
@@ -89,7 +90,9 @@ export default function Checkout() {
 
     // Validate cart not empty
     if (cartItems.length === 0) {
-      setError("Your cart is empty. Please add items before checkout.");
+      const errorMsg = "Your cart is empty. Please add items before checkout.";
+      setError(errorMsg);
+      announce(errorMsg, "assertive");
       return;
     }
 
@@ -98,9 +101,9 @@ export default function Checkout() {
       (item: any) => item.stockStatus === 'outOfStock'
     );
     if (outOfStockItems.length > 0) {
-      setError(
-        "Please remove unavailable items from your cart before placing order."
-      );
+      const errorMsg = "Please remove unavailable items from your cart before placing order.";
+      setError(errorMsg);
+      announce(errorMsg, "assertive");
       return;
     }
 
@@ -108,10 +111,12 @@ export default function Checkout() {
     const validation = validateCheckoutForm(formData);
     if (!validation.valid) {
       setError(validation.errors[0]);
+      announce(validation.errors[0], "assertive");
       return;
     }
 
     setIsSubmitting(true);
+    announce("Placing your order...", "polite");
 
     try {
       // Call server action to create order
@@ -136,6 +141,8 @@ export default function Checkout() {
         // Clear cart
         clearCart();
 
+        announce("Order placed successfully!", "polite");
+
         // Redirect to confirmation page
         router.push(`/checkout/confirmation?order=${result.orderNumber}`);
       } else {
@@ -144,27 +151,33 @@ export default function Checkout() {
           // Prices changed - show notice and require reconfirmation
           setPriceUpdateNotice(result.priceChanges);
           setNeedsReconfirm(true);
-          setError(result.error || "Prices have changed. Please review and place order again.");
+          const errorMsg = result.error || "Prices have changed. Please review and place order again.";
+          setError(errorMsg);
+          announce(errorMsg, "assertive");
 
           // Refresh cart to get updated prices
           await refreshPrices();
         } else if (result.stockIssues && result.stockIssues.length > 0) {
           // Stock issues - must go back to cart
-          setError(result.error || "Stock availability has changed. Please review your cart.");
+          const errorMsg = result.error || "Stock availability has changed. Please review your cart.";
+          setError(errorMsg);
+          announce(errorMsg, "assertive");
 
           // Refresh cart to get updated stock info
           await refreshPrices();
         } else {
-          setError(result.error || "Failed to create order");
+          const errorMsg = result.error || "Failed to create order";
+          setError(errorMsg);
+          announce(errorMsg, "assertive");
         }
 
         setIsSubmitting(false);
       }
     } catch (err) {
       console.error("Order creation failed:", err);
-      setError(
-        "Failed to create order. Please try again or contact support if the issue persists."
-      );
+      const errorMsg = "Failed to create order. Please try again or contact support if the issue persists.";
+      setError(errorMsg);
+      announce(errorMsg, "assertive");
       setIsSubmitting(false);
     }
   };
@@ -246,7 +259,7 @@ export default function Checkout() {
       <div className="py-16 flex flex-col lg:flex-row justify-center px-6 lg:px-24 gap-6">
         {/* Billing Details */}
         <div className="w-full lg:w-[45%] pt-9 flex flex-col justify-center items-start px-0 lg:px-20 gap-9">
-          <h3 className="font-semibold text-4xl">Billing details</h3>
+          <h2 className="font-semibold text-4xl">Billing details</h2>
           <form onSubmit={handlePlaceOrder} className="w-full flex flex-col gap-9">
             <div className="flex gap-8">
               <div className="flex-1">
@@ -416,14 +429,17 @@ export default function Checkout() {
               />
             </div>
             <div>
+              <label htmlFor="additionalInfo" className="block font-medium text-base mb-2">
+                Additional Information (Optional)
+              </label>
               <textarea
                 id="additionalInfo"
                 name="additionalInfo"
                 value={formData.additionalInfo}
                 onChange={handleInputChange}
-                className="w-full border border-[#9F9F9F] rounded-[10px] px-7  py-6 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#B88E2F] hover:border-[#B88E2F]"
-                rows={1}
-                placeholder="Additional information"
+                className="w-full border border-[#9F9F9F] rounded-[10px] px-7 py-6 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#B88E2F] hover:border-[#B88E2F]"
+                rows={3}
+                placeholder="Order notes (optional)"
               ></textarea>
             </div>
           </form>
@@ -432,8 +448,8 @@ export default function Checkout() {
         <div className="w-full lg:w-[55%] py-10 lg:py-20 px-0 lg:px-9">
           <div>
             <div className="flex justify-between items-start mb-6">
-              <h3 className="font-medium text-2xl">Product</h3>
-              <h3 className="font-medium text-2xl">Subtotal</h3>
+              <h2 className="font-medium text-2xl">Product</h2>
+              <h2 className="font-medium text-2xl">Subtotal</h2>
             </div>
 
             {/* Product Items with Images */}
@@ -504,55 +520,84 @@ export default function Checkout() {
               className="w-full max-w-[500px] h-auto mt-10 mb-5"
             />
             <div className="flex flex-col gap-3 mb-6">
-              <div className="flex items-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("bank_transfer")}
-                  className={`${
-                    paymentMethod === "bank_transfer"
-                      ? "bg-black"
-                      : "bg-none border border-[#9F9F9F]"
-                  } rounded-full w-3 h-3`}
-                />
-                <h3
-                  className={`font-normal text-base ${
-                    paymentMethod === "bank_transfer"
-                      ? "text-black"
-                      : "text-[#9F9F9F]"
-                  }`}
-                >
-                  Direct Bank Transfer
-                </h3>
-              </div>
-              {paymentMethod === "bank_transfer" && (
-                <p className="font-light text-base text-[#9F9F9F]">
-                  Make your payment directly into our bank account. Please use
-                  your Order ID as the payment reference. Your order will not be
-                  shipped until the funds have cleared in our account.
-                </p>
-              )}
+              <fieldset>
+                <legend className="sr-only">Payment Method</legend>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="radio"
+                    id="bank_transfer"
+                    name="paymentMethod"
+                    value="bank_transfer"
+                    checked={paymentMethod === "bank_transfer"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="sr-only peer/bank"
+                  />
+                  <label
+                    htmlFor="bank_transfer"
+                    className="flex items-center gap-4 cursor-pointer"
+                  >
+                    <span
+                      className={`${
+                        paymentMethod === "bank_transfer"
+                          ? "bg-black"
+                          : "bg-none border border-[#9F9F9F]"
+                      } rounded-full w-3 h-3 peer-focus-visible/bank:ring-2 peer-focus-visible/bank:ring-blue-600 peer-focus-visible/bank:ring-offset-2`}
+                      aria-hidden="true"
+                    />
+                    <span
+                      className={`font-normal text-base ${
+                        paymentMethod === "bank_transfer"
+                          ? "text-black"
+                          : "text-[#9F9F9F]"
+                      }`}
+                    >
+                      Direct Bank Transfer
+                    </span>
+                  </label>
+                </div>
+                {paymentMethod === "bank_transfer" && (
+                  <p className="font-light text-base text-[#9F9F9F] mt-2 ml-7">
+                    Make your payment directly into our bank account. Please use
+                    your Order ID as the payment reference. Your order will not be
+                    shipped until the funds have cleared in our account.
+                  </p>
+                )}
+              </fieldset>
             </div>
             <div>
               <div className="flex items-center gap-4 mb-3">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("cod")}
-                  className={`${
-                    paymentMethod === "cod"
-                      ? "bg-black"
-                      : "bg-none border border-[#9F9F9F]"
-                  } rounded-full w-3 h-3`}
+                <input
+                  type="radio"
+                  id="cod"
+                  name="paymentMethod"
+                  value="cod"
+                  checked={paymentMethod === "cod"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="sr-only peer/cod"
                 />
-                <h3
-                  className={`font-medium text-base ${
-                    paymentMethod === "cod" ? "text-black" : "text-[#9F9F9F]"
-                  }`}
+                <label
+                  htmlFor="cod"
+                  className="flex items-center gap-4 cursor-pointer"
                 >
-                  Cash On Delivery
-                </h3>
+                  <span
+                    className={`${
+                      paymentMethod === "cod"
+                        ? "bg-black"
+                        : "bg-none border border-[#9F9F9F]"
+                    } rounded-full w-3 h-3 peer-focus-visible/cod:ring-2 peer-focus-visible/cod:ring-blue-600 peer-focus-visible/cod:ring-offset-2`}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className={`font-medium text-base ${
+                      paymentMethod === "cod" ? "text-black" : "text-[#9F9F9F]"
+                    }`}
+                  >
+                    Cash On Delivery
+                  </span>
+                </label>
               </div>
               {paymentMethod === "cod" && (
-                <p className="font-light text-base text-[#9F9F9F] mb-3">
+                <p className="font-light text-base text-[#9F9F9F] ml-7">
                   Pay with cash upon delivery.
                 </p>
               )}

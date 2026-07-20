@@ -11,55 +11,95 @@ export default function Footer() {
           {/* Company Information */}
           <div className="flex flex-col justify-center text-center md:text-start">
             <h2 className="font-bold text-2xl mb-6 lg:mb-12">Funiro.</h2>
-            <p className="font-normal text-sm lg:text-base text-[#9F9F9F]">
+            <address className="font-normal text-sm lg:text-base text-[#9F9F9F] not-italic">
               400 University Drive Suite 200 Coral
               <br />
               Gables,
               <br />
               FL 33134 USA
-            </p>
+            </address>
           </div>
           {/* Links and Help Section */}
           <div className="flex flex-col md:flex-row gap-10 lg:gap-[144px]">
-            <div>
+            <nav aria-label="Footer navigation">
               <h3 className="font-medium text-center md:text-start text-xl md:text-base text-[#9F9F9F] mb-7 lg:mb-14">
                 Links
               </h3>
               <ul className="grid grid-cols-2 md:flex md:flex-col text-center md:text-start gap-2 md:gap-[46px] text-base font-medium">
-                <li className="hover:text-gray-700 transition">
-                  <Link href="/">Home </Link>
+                <li>
+                  <Link
+                    href="/"
+                    className="hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  >
+                    Home
+                  </Link>
                 </li>
-                <li className="hover:text-gray-700 transition">
-                  <Link href="/shop">Shop</Link>
+                <li>
+                  <Link
+                    href="/shop"
+                    className="hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  >
+                    Shop
+                  </Link>
                 </li>
-                <li className="hover:text-gray-700 transition">
-                  <Link href="/about">About</Link>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  >
+                    About
+                  </Link>
                 </li>
-                <li className="hover:text-gray-700 transition">
-                  <Link href="/contact">Contact</Link>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  >
+                    Contact
+                  </Link>
                 </li>
               </ul>
-            </div>
+            </nav>
 
-            <div>
+            <nav aria-label="Help and support">
               <h3 className="font-medium text-center md:text-start text-xl md:text-base text-[#9F9F9F] mb-7 lg:mb-14">
                 Help
               </h3>
               <ul className="grid grid-cols-1 md:flex md:flex-col text-center md:text-start gap-5 md:gap-[46px] text-base font-medium">
-                <li className="hover:text-gray-700 transition">
-                  <Link href="/orders">My Orders</Link>
+                <li>
+                  <Link
+                    href="/orders"
+                    className="hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  >
+                    My Orders
+                  </Link>
                 </li>
-                <li className="hover:text-gray-700 transition">
-                  <Link href="/payment">Payment Options</Link>
+                <li>
+                  <Link
+                    href="/payment"
+                    className="hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  >
+                    Payment Options
+                  </Link>
                 </li>
-                <li className="hover:text-gray-700 transition">
-                  <Link href="/return">Return</Link>
+                <li>
+                  <Link
+                    href="/return"
+                    className="hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  >
+                    Return
+                  </Link>
                 </li>
-                <li className="col-span-2 hover:text-gray-700 transition">
-                  <Link href="/privacy">Privacy Policies</Link>
+                <li className="col-span-2">
+                  <Link
+                    href="/privacy"
+                    className="hover:text-gray-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  >
+                    Privacy Policies
+                  </Link>
                 </li>
               </ul>
-            </div>
+            </nav>
           </div>
 
           {/* Newsletter Section */}
@@ -68,29 +108,38 @@ export default function Footer() {
               Newsletter
             </h3>
 
-            <div className="flex flex-row justify-center items-center gap-[38px]">
+            <form className="flex flex-row justify-center items-center gap-[38px]">
               <div className="relative">
+                <label htmlFor="newsletter-email" className="sr-only">
+                  Email address
+                </label>
                 <input
+                  id="newsletter-email"
                   type="email"
                   placeholder="Enter Your Email Address"
-                  className="w-full text-sm leading-5  text-[#9F9F9F] font-normal placeholder-gray-500 outline-none"
+                  className="w-full text-sm leading-5 text-[#9F9F9F] font-normal placeholder-gray-500 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                  required
                 />
-                <span className="absolute bottom-0 mt-[3px] left-0 w-[115%] h-[1px] bg-black "></span>
+                <span className="absolute bottom-0 mt-[3px] left-0 w-[115%] h-[1px] bg-black" aria-hidden="true"></span>
               </div>
-              <div className="hover:scale-105 transition-transform duration-300">
-                <p className="text-sm text-black font-medium">SUBSCRIBE</p>
+              <button
+                type="submit"
+                className="hover:scale-105 transition-transform duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+              >
+                <span className="text-sm text-black font-medium">SUBSCRIBE</span>
                 <Image
                   src={line2}
-                  alt="line"
+                  alt=""
                   className="w-[75px] h-[1px] mt-[3px]"
+                  aria-hidden="true"
                 />
-              </div>
-            </div>
+              </button>
+            </form>
           </div>
         </div>
         <div className="mt-12 flex flex-col gap-[35px] text-center md:text-start">
-          <Image src={line} alt="line" />
-          <p >2023 furino. All rights reverved</p>
+          <Image src={line} alt="" aria-hidden="true" />
+          <p>2023 furino. All rights reserved</p>
         </div>
       </div>
     </footer>

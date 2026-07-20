@@ -2,6 +2,7 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { client } from "@/sanity/lib/client";
+import { announce } from "./utils/announcer";
 
 const CartContext = createContext();
 
@@ -16,9 +17,9 @@ export const CartProvider = ({ children }) => {
   // Load cart from localStorage on mount and refresh prices
   useEffect(() => {
     const loadCart = async () => {
-      const savedCartData = localStorage.getItem(CART_STORAGE_KEY);
-      if (savedCartData) {
-        try {
+      try {
+        const savedCartData = localStorage.getItem(CART_STORAGE_KEY);
+        if (savedCartData) {
           const { items, timestamp } = JSON.parse(savedCartData);
 
           // Check if cart has expired (30 days)
@@ -33,10 +34,22 @@ export const CartProvider = ({ children }) => {
           } else {
             // Cart expired, clear it
             localStorage.removeItem(CART_STORAGE_KEY);
+            announce("Your saved cart has expired and has been cleared.", "polite");
           }
-        } catch (error) {
-          console.error("Error loading cart:", error);
+        }
+      } catch (error) {
+        console.error("Error loading cart:", error);
+        // Check if it's a localStorage error
+        if (error.name === 'QuotaExceededError') {
+          announce("Your cart couldn't be saved on this device. It will remain available until you close your browser.", "polite");
+        } else {
+          announce("Your saved cart could not be restored and has been reset.", "polite");
+        }
+        // Clear corrupted data
+        try {
           localStorage.removeItem(CART_STORAGE_KEY);
+        } catch (e) {
+          // localStorage not available, continue with session-only cart
         }
       }
     };
@@ -46,15 +59,26 @@ export const CartProvider = ({ children }) => {
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    if (cartItems.length > 0) {
+    if (cartItems.length === 0) {
+      try {
+        localStorage.removeItem(CART_STORAGE_KEY);
+      } catch (error) {
+        // localStorage not available, ignore
+      }
+      return;
+    }
+
+    try {
       const cartData = {
         items: cartItems,
         timestamp: Date.now()
       };
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartData));
-    } else {
-      // If cart is empty, remove from localStorage
-      localStorage.removeItem(CART_STORAGE_KEY);
+    } catch (error) {
+      console.error("Error saving cart:", error);
+      if (error.name === 'QuotaExceededError') {
+        announce("Your cart couldn't be saved on this device. It will remain available until you close your browser.", "polite");
+      }
     }
   }, [cartItems]);
 
@@ -123,6 +147,11 @@ export const CartProvider = ({ children }) => {
 
       setCartItems(updatedItems);
       setPriceChanges(changes);
+
+      // Announce price changes
+      if (changes.length > 0) {
+        announce("Prices have been updated for some items in your cart.", "polite");
+      }
     } catch (error) {
       console.error("Error refreshing prices:", error);
     } finally {
@@ -158,35 +187,64 @@ export const CartProvider = ({ children }) => {
 
         // Don't exceed available stock
         if (newQuantity <= stockLimit) {
+          // Announce quantity update
+          const newTotal = prevItems.reduce((sum, i) =>
+            i.id === item.id ? sum + newQuantity : sum + i.quantity, 0
+          );
+          announce(`${item.title} quantity updated to ${newQuantity}. Cart now contains ${newTotal} ${newTotal === 1 ? 'item' : 'items'}.`, "polite");
+
           return prevItems.map((i) =>
             i.id === item.id ? { ...i, quantity: newQuantity } : i
           );
         }
-        // Already at stock limit, return unchanged
+        // Already at stock limit, announce
+        announce(`Cannot add more. Only ${stockLimit} available.`, "polite");
         return prevItems;
       }
+
       // New item, add to cart with quantity 1 and include currency
-      return [...prevItems, { ...item, quantity: 1, currency: item.currency || '$' }];
+      const newCart = [...prevItems, { ...item, quantity: 1, currency: item.currency || '$' }];
+      const totalItems = newCart.reduce((sum, i) => sum + i.quantity, 0);
+      announce(`${item.title} added to cart. Cart now contains ${totalItems} ${totalItems === 1 ? 'item' : 'items'}.`, "polite");
+
+      return newCart;
     });
   };
 
   const removeFromCart = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.id !== id)
-    );
+    setCartItems((prevItems) => {
+      const removedItem = prevItems.find((item) => item.id === id);
+      const newCart = prevItems.filter((item) => item.id !== id);
+      const totalItems = newCart.reduce((sum, i) => sum + i.quantity, 0);
+
+      if (removedItem) {
+        announce(
+          `${removedItem.title} removed from cart. Cart now contains ${totalItems} ${totalItems === 1 ? 'item' : 'items'}.`,
+          "polite"
+        );
+      }
+
+      return newCart;
+    });
   };
 
   const updateQuantity = (id, quantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
+    setCartItems((prevItems) => {
+      const item = prevItems.find((i) => i.id === id);
+      if (item) {
+        announce(`${item.title} quantity updated to ${quantity}.`, "polite");
+      }
+
+      return prevItems.map((item) =>
         item.id === id ? { ...item, quantity } : item
-      )
-    );
+      );
+    });
   };
 
   const clearCart = () => {
     setCartItems([]);
     setPriceChanges([]);
+    announce("Cart cleared.", "polite");
   };
 
   return (

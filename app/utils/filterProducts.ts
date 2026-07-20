@@ -1,0 +1,146 @@
+/**
+ * Product Filtering Utilities
+ * Pure functions for filtering products based on various criteria
+ */
+
+export interface Product {
+  _id: string;
+  title: string;
+  description?: string;
+  price: number;
+  stockQuantity: number;
+  category?: string;
+  tags?: string[];
+  [key: string]: any;
+}
+
+export interface FilterCriteria {
+  q?: string;
+  category?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  availability?: string[];
+}
+
+/**
+ * Get stock status based on quantity
+ */
+export function getStockStatus(stockQuantity: number): 'in-stock' | 'low-stock' | 'out-of-stock' {
+  if (stockQuantity === 0) return 'out-of-stock';
+  if (stockQuantity <= 5) return 'low-stock';
+  return 'in-stock';
+}
+
+/**
+ * Filter products based on search query
+ * Searches in title, description, category, and tags (case-insensitive)
+ */
+function filterBySearch(products: Product[], query: string): Product[] {
+  if (!query || query.length < 2) return products;
+
+  const searchTerm = query.toLowerCase();
+
+  return products.filter(product => {
+    const title = product.title?.toLowerCase() || '';
+    const description = product.description?.toLowerCase() || '';
+    const category = product.category?.toLowerCase() || '';
+    const tags = product.tags?.map(t => t.toLowerCase()).join(' ') || '';
+
+    return (
+      title.includes(searchTerm) ||
+      description.includes(searchTerm) ||
+      category.includes(searchTerm) ||
+      tags.includes(searchTerm)
+    );
+  });
+}
+
+/**
+ * Filter products by category
+ */
+function filterByCategory(products: Product[], category: string): Product[] {
+  if (!category) return products;
+  return products.filter(product => product.category === category);
+}
+
+/**
+ * Filter products by price range
+ */
+function filterByPrice(products: Product[], minPrice: string, maxPrice: string): Product[] {
+  let filtered = products;
+
+  if (minPrice) {
+    const min = parseFloat(minPrice);
+    if (!isNaN(min)) {
+      filtered = filtered.filter(product => product.price >= min);
+    }
+  }
+
+  if (maxPrice) {
+    const max = parseFloat(maxPrice);
+    if (!isNaN(max)) {
+      filtered = filtered.filter(product => product.price <= max);
+    }
+  }
+
+  return filtered;
+}
+
+/**
+ * Filter products by availability (stock status)
+ * Uses OR logic: products matching ANY selected status are included
+ */
+function filterByAvailability(products: Product[], availability: string[]): Product[] {
+  if (!availability || availability.length === 0) return products;
+
+  return products.filter(product => {
+    const status = getStockStatus(product.stockQuantity);
+    return availability.includes(status);
+  });
+}
+
+/**
+ * Main filter function - applies all filters with AND logic
+ * Multiple filters must ALL match for a product to be included
+ */
+export function filterProducts(products: Product[], filters: FilterCriteria): Product[] {
+  let filtered = products;
+
+  // Apply search filter
+  if (filters.q) {
+    filtered = filterBySearch(filtered, filters.q);
+  }
+
+  // Apply category filter
+  if (filters.category) {
+    filtered = filterByCategory(filtered, filters.category);
+  }
+
+  // Apply price range filter
+  if (filters.minPrice || filters.maxPrice) {
+    filtered = filterByPrice(filtered, filters.minPrice || '', filters.maxPrice || '');
+  }
+
+  // Apply availability filter
+  if (filters.availability && filters.availability.length > 0) {
+    filtered = filterByAvailability(filtered, filters.availability);
+  }
+
+  return filtered;
+}
+
+/**
+ * Get the min and max prices from a list of products
+ * Useful for setting price filter boundaries
+ */
+export function getPriceRange(products: Product[]): { min: number; max: number } {
+  if (products.length === 0) {
+    return { min: 0, max: 0 };
+  }
+
+  const prices = products.map(p => p.price);
+  return {
+    min: Math.min(...prices),
+    max: Math.max(...prices),
+  };
+}

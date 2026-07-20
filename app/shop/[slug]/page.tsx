@@ -3,10 +3,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 import { useCart } from "@/app/CartContext";
 import Banner from "@/app/components/Banner";
 import Guarantees from "@/app/components/Guarantees";
+import ImageGallery from "@/app/components/ImageGallery";
+import QuantitySelector from "@/app/components/QuantitySelector";
+import { announce } from "@/app/utils/announcer";
 
 interface Product {
   _id: string;
@@ -29,7 +33,8 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const { cartItems, addToCart, updateQuantity } = useCart() as any;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -69,15 +74,30 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (product && product.stockStatus !== "outOfStock") {
-      addToCart({
-        id: product._id,
-        title: product.title,
-        price: product.price,
-        currency: product.currency,
-        imageUrl: product.imageUrl,
-        stockQuantity: product.stockQuantity,
-        stockStatus: product.stockStatus,
-      });
+      const existing = cartItems.find((i: any) => i.id === product._id);
+      const currentQty = existing ? existing.quantity : 0;
+      const targetQty = currentQty + quantity;
+
+      if (targetQty <= product.stockQuantity) {
+        if (existing) {
+          updateQuantity(product._id, targetQty);
+        } else {
+          addToCart({
+            id: product._id,
+            title: product.title,
+            price: product.price,
+            currency: product.currency,
+            imageUrl: product.imageUrl,
+            stockQuantity: product.stockQuantity,
+            stockStatus: product.stockStatus,
+          });
+          if (quantity > 1) {
+            updateQuantity(product._id, quantity);
+          }
+        }
+      } else {
+        announce(`Cannot add more. Only ${product.stockQuantity} items are available in stock.`, "polite");
+      }
     }
   };
 
@@ -105,12 +125,12 @@ export default function ProductDetailPage() {
             <p className="text-gray-600 mb-8">
               {error || "The product you're looking for doesn't exist."}
             </p>
-            <a
+            <Link
               href="/shop"
-              className="bg-[#B88E2F] text-white px-8 py-3 hover:bg-[#9d7728] transition-colors"
+              className="bg-[#B88E2F] text-white px-8 py-3 hover:bg-[#9d7728] transition-colors inline-block"
             >
               Back to Shop
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -123,17 +143,14 @@ export default function ProductDetailPage() {
 
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Image */}
-          <div className="relative w-full h-[400px] lg:h-[600px]">
-            <Image
-              src={product.imageUrl}
-              alt={product.title}
-              fill
-              className="object-cover rounded-lg"
-              priority
+          {/* Product Image Gallery */}
+          <div className="w-full relative">
+            <ImageGallery 
+              images={product.imageUrl ? [product.imageUrl, product.imageUrl, product.imageUrl] : []} 
+              title={product.title} 
             />
             {product.discountPercentage && (
-              <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-16 h-16 flex items-center justify-center text-lg font-medium">
+              <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-16 h-16 flex items-center justify-center text-lg font-medium z-10 pointer-events-none">
                 {product.discountPercentage}
               </div>
             )}
@@ -174,16 +191,26 @@ export default function ProductDetailPage() {
               </p>
             </div>
 
+            {/* Quantity Selector */}
+            <div className="mb-8">
+              <QuantitySelector
+                quantity={quantity}
+                stockQuantity={product.stockQuantity}
+                disabled={isOutOfStock}
+                onChange={setQuantity}
+              />
+            </div>
+
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
               className={`
-                px-12 py-4 text-lg font-semibold transition-all
+                px-12 py-4 text-lg font-semibold transition-all rounded-lg shadow-sm
                 ${
                   isOutOfStock
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-[#B88E2F] text-white hover:bg-[#9d7728] hover:scale-105"
+                    : "bg-[#B88E2F] text-white hover:bg-[#9d7728] hover:scale-102 active:scale-98 focus:outline-none focus:ring-2 focus:ring-[#B88E2F] focus:ring-offset-2"
                 }
               `}
             >
