@@ -1,6 +1,18 @@
+
 /**
  * Server-side validation utilities for price and stock integrity
  */
+
+import type { SanityClient } from '@sanity/client';
+
+interface SanityProduct {
+  _id: string;
+  title: string;
+  price: number;
+  currency?: string;
+  stockStatus: string;
+  stockQuantity: number;
+}
 
 interface CartItem {
   id: string;
@@ -43,7 +55,7 @@ function parsePrice(price: string | number): number {
  */
 export async function validateCartAgainstSanity(
   cartItems: CartItem[],
-  sanityClient: any
+  sanityClient: SanityClient
 ): Promise<ValidationResult> {
   const productIds = cartItems.map((item) => item.id);
 
@@ -57,11 +69,15 @@ export async function validateCartAgainstSanity(
     stockQuantity
   }`;
 
-  const currentProducts = await sanityClient.fetch(query, { ids: productIds });
+const currentProducts = await sanityClient.fetch<SanityProduct[]>(
+  query,
+  { ids: productIds }
+);
 
   // Create lookup map
-  const productMap: Record<string, any> = {};
-  currentProducts.forEach((product: any) => {
+
+  const productMap: Record<string, SanityProduct> = {};
+  currentProducts.forEach((product: SanityProduct) => {
     productMap[product._id] = product;
   });
 
@@ -131,7 +147,7 @@ export async function validateCartAgainstSanity(
  */
 export function calculateValidatedTotal(
   cartItems: CartItem[],
-  productMap: Record<string, any>
+  productMap: Record<string, SanityProduct>
 ): number {
   return cartItems.reduce((total, item) => {
     const product = productMap[item.id];

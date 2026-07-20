@@ -146,7 +146,7 @@ export default function WishlistClient({ products }: WishlistClientProps) {
             </svg>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Your wishlist is empty</h3>
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              You haven't added any products to your wishlist yet.
+              You haven&apos;t added any products to your wishlist yet.
             </p>
             <Link href="/shop">
               <button className="bg-[#B88E2F] hover:bg-[#9E7A28] text-white font-medium py-3 px-8 rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B88E2F]">
