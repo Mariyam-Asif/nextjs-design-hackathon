@@ -196,7 +196,7 @@ export default function OrderConfirmation() {
                 Order Placed Successfully!
               </h2>
               <p className="text-green-700">
-                Thank you for your order. We've received your order and will begin processing it shortly.
+                Thank you for your order. We&apos;ve received your order and will begin processing it shortly.
               </p>
             </div>
           </div>

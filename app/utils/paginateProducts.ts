@@ -5,7 +5,6 @@
 
 interface Product {
   _id: string;
-  [key: string]: any;
 }
 
 export interface PaginationResult<T> {
@@ -117,7 +116,7 @@ export function getPageNumbers(
  * Get pagination display text
  * Example: "Showing 13-24 of 48 products"
  */
-export function getPaginationText(result: PaginationResult<any>): string {
+export function getPaginationText<T extends Product>(result: PaginationResult<T>): string {
   const { startIndex, endIndex, totalProducts } = result;
 
   if (totalProducts === 0) {

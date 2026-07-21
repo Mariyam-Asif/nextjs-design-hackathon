@@ -11,7 +11,6 @@ export interface Product {
   stockQuantity: number;
   category?: string;
   tags?: string[];
-  [key: string]: any;
 }
 
 export interface FilterCriteria {

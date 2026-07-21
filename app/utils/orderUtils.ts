@@ -3,6 +3,19 @@
  * Uses base-32 character set (A-Z uppercase + 2-9) for 8 characters
  * Total combinations: 23^8 = ~8 trillion
  */
+import type { SanityClient } from '@sanity/client';
+
+interface CheckoutFormData {
+  firstName: string;
+  lastName: string;
+  country: string;
+  streetAddress: string;
+  city: string;
+  zipCode: string;
+  phone: string;
+  email: string;
+}
+
 export function generateOrderNumber(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 23 chars (no I, O, 0, 1 for clarity)
   let orderNumber = 'ORD-';
@@ -18,15 +31,20 @@ export function generateOrderNumber(): string {
   return orderNumber;
 }
 
+interface SanityOrder {
+  _id: string;
+  orderNumber: string;
+}
+
 /**
  * Checks if an order number already exists in Sanity
  */
 export async function checkOrderNumberExists(
   orderNumber: string,
-  sanityClient: any
+  sanityClient: SanityClient
 ): Promise<boolean> {
   const query = `*[_type == "order" && orderNumber == $orderNumber][0]`;
-  const result = await sanityClient.fetch(query, { orderNumber });
+  const result = await sanityClient.fetch<SanityOrder | null>(query, { orderNumber });
   return !!result;
 }
 
@@ -35,7 +53,7 @@ export async function checkOrderNumberExists(
  * Retries up to 5 times if collision detected
  */
 export async function generateUniqueOrderNumber(
-  sanityClient: any
+  sanityClient: SanityClient
 ): Promise<string> {
   const maxAttempts = 5;
 
@@ -56,7 +74,7 @@ export async function generateUniqueOrderNumber(
 /**
  * Validates form data before order creation
  */
-export function validateCheckoutForm(formData: any): { valid: boolean; errors: string[] } {
+export function validateCheckoutForm(formData: CheckoutFormData): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
   // Required fields

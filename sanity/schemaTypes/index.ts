@@ -5,7 +5,8 @@ import { hero } from './hero';
 import { banner } from './banner';
 import { contactSubmission } from './contactSubmission';
 import { blogPost } from './blogPost';
+import { category } from './category';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [product, order, hero, banner, contactSubmission, blogPost],
+  types: [product, order, hero, banner, contactSubmission, blogPost, category],
 };

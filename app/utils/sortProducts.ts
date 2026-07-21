@@ -9,7 +9,6 @@ interface Product {
   price: number;
   displayOrder?: number;
   _createdAt?: string;
-  [key: string]: any;
 }
 
 export type SortOption =

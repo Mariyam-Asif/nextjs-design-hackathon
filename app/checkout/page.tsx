@@ -10,7 +10,6 @@ import Image from "next/image";
 import { useCart } from "../CartContext";
 import { createOrder } from "../actions/orderActions";
 import { validateCheckoutForm } from "../utils/orderUtils";
-import { client } from "@/sanity/lib/client";
 import { announce } from "../utils/announcer";
 
 interface FormData {
@@ -27,6 +26,24 @@ interface FormData {
   additionalInfo: string;
 }
 
+interface PriceUpdateNotice {
+  title: string;
+  cartPrice: number;
+  currentPrice: number;
+  currency?: string;
+}
+
+interface CartItem {
+  id: string;
+  title: string;
+  imageUrl: string;
+  price: string;
+  currency?: string;
+  quantity: number;
+  stockQuantity: number;
+  stockStatus: string;
+}
+
 export default function Checkout() {
   const router = useRouter();
   const { cartItems, clearCart, refreshPrices } = useCart();
@@ -36,8 +53,7 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [priceUpdateNotice, setPriceUpdateNotice] = useState<any>(null);
-  const [needsReconfirm, setNeedsReconfirm] = useState(false);
+  const [priceUpdateNotice, setPriceUpdateNotice] = useState<PriceUpdateNotice[] | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -55,10 +71,10 @@ export default function Checkout() {
 
   // Refresh prices when checkout page loads
   useEffect(() => {
-    if (cartItems.length > 0) {
-      refreshPrices();
-    }
-  }, []);
+  if (cartItems.length > 0) {
+    refreshPrices();
+  }
+}, [cartItems.length, refreshPrices]);
 
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const countryCode = event.target.value;
@@ -80,7 +96,7 @@ export default function Checkout() {
   };
 
   const subtotal = cartItems.reduce(
-    (total: number, item: any) => total + getNumericPrice(item.price) * item.quantity,
+    (total: number, item: CartItem) => total + getNumericPrice(item.price) * item.quantity,
     0
   );
 
@@ -98,7 +114,7 @@ export default function Checkout() {
 
     // Validate no out of stock items in cart
     const outOfStockItems = cartItems.filter(
-      (item: any) => item.stockStatus === 'outOfStock'
+      (item: CartItem) => item.stockStatus === 'outOfStock'
     );
     if (outOfStockItems.length > 0) {
       const errorMsg = "Please remove unavailable items from your cart before placing order.";
@@ -150,7 +166,6 @@ export default function Checkout() {
         if (result.priceChanges && result.priceChanges.length > 0) {
           // Prices changed - show notice and require reconfirmation
           setPriceUpdateNotice(result.priceChanges);
-          setNeedsReconfirm(true);
           const errorMsg = result.error || "Prices have changed. Please review and place order again.";
           setError(errorMsg);
           announce(errorMsg, "assertive");
@@ -218,7 +233,7 @@ export default function Checkout() {
                   Some prices have been updated since you loaded this page. Please review the changes below and place your order again to confirm.
                 </p>
                 <div className="space-y-2">
-                  {priceUpdateNotice.map((change: any, index: number) => (
+                  {priceUpdateNotice.map((change, index: number) => (
                     <div key={index} className="text-sm text-yellow-800">
                       <span className="font-medium">{change.title}:</span>{' '}
                       <span className="line-through text-gray-500">{change.currency || '$'} {change.cartPrice}</span>
@@ -231,7 +246,6 @@ export default function Checkout() {
               <button
                 onClick={() => {
                   setPriceUpdateNotice(null);
-                  setNeedsReconfirm(false);
                 }}
                 className="ml-4 text-yellow-600 hover:text-yellow-800 transition-colors"
                 aria-label="Dismiss notification"
@@ -454,7 +468,7 @@ export default function Checkout() {
 
             {/* Product Items with Images */}
             <div className="space-y-4 mb-6">
-              {cartItems.map((item: any) => {
+              {cartItems.map((item: CartItem) => {
                 const stockExceeded = item.stockQuantity && item.quantity > item.stockQuantity;
                 const atStockLimit = item.stockQuantity && item.quantity >= item.stockQuantity;
                 const isLowStock = item.stockStatus === 'lowStock';

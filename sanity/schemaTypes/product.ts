@@ -111,5 +111,48 @@ export const product = defineType({
             initialValue: 0,
             description: "Available quantity in stock. Set to 0 for out of stock items."
         },
+        {
+            name: "category",
+            type: "string",
+            title: "Category",
+            description: "Product category slug (e.g., 'furniture', 'decor')"
+        },
+        {
+            name: "isFeatured",
+            type: "boolean",
+            title: "Featured Product",
+            description: "Featured products appear on the home page",
+            initialValue: false
+        },
+        {
+            name: "displayOrder",
+            type: "number",
+            title: "Display Order",
+            description: "Higher numbers appear first in 'Featured' sort. Leave at 0 for default.",
+            initialValue: 0
+        },
+        {
+            name: "specifications",
+            type: "array",
+            title: "Specifications",
+            description: "Product specifications for comparison table",
+            of: [
+                {
+                    type: "object",
+                    fields: [
+                        {
+                            name: "key",
+                            type: "string",
+                            title: "Specification Name"
+                        },
+                        {
+                            name: "value",
+                            type: "string",
+                            title: "Specification Value"
+                        }
+                    ]
+                }
+            ]
+        },
     ],
 });

@@ -158,7 +158,7 @@ export default function Orders() {
             </svg>
             <h3 className="text-2xl font-semibold mb-2">No Orders Yet</h3>
             <p className="text-gray-600 mb-6">
-              You haven't placed any orders yet. Start shopping to see your orders here.
+              You haven&#39;t placed any orders yet. Start shopping to see your orders here.
             </p>
             <Link
               href="/shop"
