@@ -4,22 +4,7 @@
  */
 
 import type { SanityClient } from '@sanity/client';
-
-interface SanityProduct {
-  _id: string;
-  title: string;
-  price: number;
-  currency?: string;
-  stockStatus: string;
-  stockQuantity: number;
-}
-
-interface CartItem {
-  id: string;
-  title: string;
-  price: string;
-  quantity: number;
-}
+import type { CartItem, SanityProduct } from '../types';
 
 interface ProductValidation {
   id: string;
