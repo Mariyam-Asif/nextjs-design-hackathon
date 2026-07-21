@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Banner from "@/app/components/Banner";
 import Guarantees from "@/app/components/Guarantees";
 import { client } from "@/sanity/lib/client";
@@ -43,7 +43,6 @@ interface Order {
 
 export default function OrderConfirmation() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const orderNumber = searchParams.get("order");
 
   const [order, setOrder] = useState<Order | null>(null);

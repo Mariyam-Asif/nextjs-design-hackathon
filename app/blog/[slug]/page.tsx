@@ -22,12 +22,12 @@ interface BlogPost {
   title: string;
   slug: string;
   excerpt: string;
-  body?: any;
+  body?: unknown;
   imageUrl?: string;
   author: string;
   publishedAt: string;
   tags?: string[];
-  localImage?: any;
+  localImage?: unknown;
 }
 
 const FALLBACK_POSTS: Record<string, BlogPost> = {
@@ -144,12 +144,12 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   }
 
   // Helper to render portable text body block
-  const renderBody = (body: any) => {
+  const renderBody = (body: unknown) => {
     if (!body || !Array.isArray(body)) return null;
 
-    return body.map((block: any, i: number) => {
+    return body.map((block: Record<string, unknown>, i: number) => {
       if (block._type === 'block') {
-        const text = block.children?.map((c: any) => c.text).join('') || '';
+        const text = block.children?.map((c: Record<string, unknown>) => c.text).join('') || '';
 
         if (block.style === 'h1') return <h1 key={i} className="text-3xl sm:text-4xl font-bold text-gray-900 my-6 leading-tight">{text}</h1>;
         if (block.style === 'h2') return <h2 key={i} className="text-2xl sm:text-3xl font-bold text-gray-900 my-5 leading-tight">{text}</h2>;

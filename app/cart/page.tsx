@@ -110,7 +110,7 @@ const getNumericPrice = (price:string):number =>{
                   Prices have been updated for {priceChanges.length} item{priceChanges.length !== 1 ? 's' : ''} in your cart:
                 </p>
                 <div className="space-y-2">
-                  {priceChanges.map((change: any, index: number) => (
+                  {priceChanges.map((change: { id: string; title: string; oldPrice: string; newPrice: string }, index: number) => (
                     <div key={index} className="text-sm text-yellow-800">
                       <span className="font-medium">{change.title}:</span>{' '}
                       <span className="line-through text-gray-500">{change.oldPrice}</span>

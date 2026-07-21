@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
 import { client } from "@/sanity/lib/client";
 import { announce } from "./utils/announcer";
 
@@ -13,6 +13,93 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [priceChanges, setPriceChanges] = useState([]);
   const [isRefreshingPrices, setIsRefreshingPrices] = useState(false);
+
+  // Helper to parse price strings
+  const parsePrice = (price) => {
+    if (typeof price === "number") return price;
+    const priceString = String(price);
+    return parseFloat(priceString.replace(/[^\d.-]/g, "").replace(",", ""));
+  };
+
+  // Refresh prices from Sanity - wrapped in useCallback
+  const refreshPrices = useCallback(async (items) => {
+    if (!items || items.length === 0) return;
+
+    try {
+      setIsRefreshingPrices(true);
+      const productIds = items.map((item) => item.id);
+      const query = `*[_type == "product" && _id in $ids]{
+        _id,
+        price,
+        currency,
+        title,
+        stockStatus,
+        stockQuantity
+      }`;
+
+      const products = await client.fetch(query, { ids: productIds });
+
+      // Create a map for quick lookup
+      const productMap = {};
+      products.forEach((product) => {
+        productMap[product._id] = product;
+      });
+
+      const changes = [];
+
+      // Update cart items with current prices and detect changes
+      const updatedItems = items.map((item) => {
+        const currentProduct = productMap[item.id];
+        if (currentProduct) {
+          const newPrice = parsePrice(currentProduct.price);
+          const itemOldPrice = parsePrice(item.price);
+
+          // Check if price changed
+          if (itemOldPrice !== newPrice) {
+            changes.push({
+              id: item.id,
+              title: item.title,
+              oldPrice: item.price,
+              newPrice: ` ${newPrice}`,
+            });
+
+            return {
+              ...item,
+              price: `$ ${newPrice}`,
+              stockStatus: currentProduct.stockStatus,
+              stockQuantity: currentProduct.stockQuantity,
+              title: currentProduct.title,
+            };
+          }
+
+          // Update stock status and quantity even if price didn't change
+          return {
+            ...item,
+            stockStatus: currentProduct.stockStatus,
+            stockQuantity: currentProduct.stockQuantity,
+            title: currentProduct.title,
+          };
+        }
+
+        return item;
+      });
+
+      setCartItems(updatedItems);
+
+      // Announce price changes if any
+      if (changes.length > 0) {
+        setPriceChanges(changes);
+        announce(
+          `Prices have been updated for ${changes.length} item${changes.length !== 1 ? "s" : ""} in your cart.`,
+          "polite"
+        );
+      }
+    } catch (error) {
+      console.error("Error refreshing prices:", error);
+    } finally {
+      setIsRefreshingPrices(false);
+    }
+  }, []);
 
   // Load cart from localStorage on mount and refresh prices
   useEffect(() => {
@@ -48,21 +135,21 @@ export const CartProvider = ({ children }) => {
         // Clear corrupted data
         try {
           localStorage.removeItem(CART_STORAGE_KEY);
-        } catch (e) {
+        } catch {
           // localStorage not available, continue with session-only cart
         }
       }
     };
 
     loadCart();
-  }, []);
+  }, [refreshPrices]);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     if (cartItems.length === 0) {
       try {
         localStorage.removeItem(CART_STORAGE_KEY);
-      } catch (error) {
+      } catch {
         // localStorage not available, ignore
       }
       return;
@@ -82,95 +169,13 @@ export const CartProvider = ({ children }) => {
     }
   }, [cartItems]);
 
-  // Refresh prices from Sanity
-  const refreshPrices = async (items) => {
-    if (!items || items.length === 0) return;
-
-    setIsRefreshingPrices(true);
-    const changes = [];
-
-    try {
-      // Fetch current prices for all cart items
-      const productIds = items.map((item) => item.id);
-      const query = `*[_type == "product" && _id in $ids]{
-        _id,
-        price,
-        currency,
-        stockStatus,
-        stockQuantity,
-        title
-      }`;
-      const currentProducts = await client.fetch(query, { ids: productIds });
-
-      // Create a map for quick lookup
-      const productMap = {};
-      currentProducts.forEach((product) => {
-        productMap[product._id] = product;
-      });
-
-      // Update cart items with current prices and detect changes
-      const updatedItems = items.map((item) => {
-        const currentProduct = productMap[item.id];
-        if (currentProduct) {
-          const oldPrice = parsePrice(item.price);
-          const newPrice = parsePrice(currentProduct.price);
-
-          // Check if price changed
-          if (oldPrice !== newPrice) {
-            changes.push({
-              id: item.id,
-              title: item.title,
-              oldPrice: item.price,
-              newPrice: ` ${newPrice}`,
-            });
-
-            return {
-              ...item,
-              price: `$ ${newPrice}`,
-              oldPrice: item.price,
-              stockStatus: currentProduct.stockStatus,
-              stockQuantity: currentProduct.stockQuantity,
-              title: currentProduct.title,
-            };
-          }
-
-          // Update stock status and quantity even if price didn't change
-          return {
-            ...item,
-            stockStatus: currentProduct.stockStatus,
-            stockQuantity: currentProduct.stockQuantity,
-            title: currentProduct.title,
-          };
-        }
-        return item;
-      });
-
-      setCartItems(updatedItems);
-      setPriceChanges(changes);
-
-      // Announce price changes
-      if (changes.length > 0) {
-        announce("Prices have been updated for some items in your cart.", "polite");
-      }
-    } catch (error) {
-      console.error("Error refreshing prices:", error);
-    } finally {
-      setIsRefreshingPrices(false);
-    }
-  };
-
-  // Parse price to number
-  const parsePrice = (price) => {
-    const priceString = price.toString();
-    return parseInt(priceString.replace(/[^0-9]/g, ""), 10) || 0;
-  };
-
   // Clear price change notifications
   const clearPriceChanges = () => {
     setPriceChanges([]);
     // Remove oldPrice from cart items
     setCartItems((prevItems) =>
       prevItems.map((item) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { oldPrice, ...rest } = item;
         return rest;
       })

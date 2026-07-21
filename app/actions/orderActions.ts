@@ -3,17 +3,11 @@
 import { writeClient, client } from "@/sanity/lib/client";
 import { generateUniqueOrderNumber, validateCheckoutForm } from "../utils/orderUtils";
 import { validateCartAgainstSanity } from "../utils/validationUtils";
-
-interface OrderData {
-  formData: any;
-  cartItems: any[];
-  paymentMethod: string;
-  subtotal: number;
-}
+import type { OrderData, CartItem, SanityProduct } from "../types";
 
 export async function createOrder(orderData: OrderData) {
   try {
-    const { formData, cartItems, paymentMethod, subtotal } = orderData;
+    const { formData, cartItems, paymentMethod } = orderData;
 
     // Validate form
     const validation = validateCheckoutForm(formData);
@@ -66,16 +60,16 @@ export async function createOrder(orderData: OrderData) {
     const orderNumber = await generateUniqueOrderNumber(writeClient);
 
     // Fetch current validated prices and currencies for order (use Sanity as source of truth)
-    const productIds = cartItems.map((item: any) => item.id);
+    const productIds = cartItems.map((item: CartItem) => item.id);
     const query = `*[_type == "product" && _id in $ids]{
       _id,
       price,
       currency
     }`;
-    const currentProducts = await client.fetch(query, { ids: productIds });
+    const currentProducts = await client.fetch<SanityProduct[]>(query, { ids: productIds });
     const productPriceMap: Record<string, number> = {};
     const productCurrencyMap: Record<string, string> = {};
-    currentProducts.forEach((product: any) => {
+    currentProducts.forEach((product: SanityProduct) => {
       productPriceMap[product._id] = product.price;
       productCurrencyMap[product._id] = product.currency || '$';
     });
@@ -84,7 +78,7 @@ export async function createOrder(orderData: OrderData) {
     const orderCurrency = cartItems[0]?.currency || productCurrencyMap[cartItems[0]?.id] || '$';
 
     // Calculate validated total using current Sanity prices
-    const validatedTotal = cartItems.reduce((total: number, item: any) => {
+    const validatedTotal = cartItems.reduce((total: number, item: CartItem) => {
       const currentPrice = productPriceMap[item.id] || 0;
       return total + currentPrice * item.quantity;
     }, 0);
@@ -114,7 +108,7 @@ export async function createOrder(orderData: OrderData) {
         phone: formData.phone,
         email: formData.email,
       },
-      items: cartItems.map((item: any) => {
+      items: cartItems.map((item: CartItem) => {
         const validatedPrice = productPriceMap[item.id] || 0;
         const itemCurrency = productCurrencyMap[item.id] || orderCurrency;
         return {
@@ -144,11 +138,11 @@ export async function createOrder(orderData: OrderData) {
       success: true,
       orderNumber,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Order creation failed:", error);
     return {
       success: false,
-      error: error.message || "Failed to create order",
+      error: error instanceof Error ? error.message : "Failed to create order",
     };
   }
 }

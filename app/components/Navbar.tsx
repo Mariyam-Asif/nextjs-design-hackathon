@@ -21,7 +21,7 @@ export default function Navbar() {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
-  const { cartItems } = useCart() as any;
+  const { cartItems } = useCart() as { cartItems: unknown[] };
   const { wishlist } = useWishlist();
   const { comparison } = useComparison();
 

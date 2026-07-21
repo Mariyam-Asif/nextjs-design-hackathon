@@ -7,7 +7,7 @@ interface BlogPost {
   title: string;
   slug: string;
   excerpt: string;
-  body?: any;
+  body?: unknown;
   imageUrl: string;
   author: string;
   publishedAt: string;

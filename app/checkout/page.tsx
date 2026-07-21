@@ -197,12 +197,6 @@ export default function Checkout() {
     }
   };
 
-  const getCountryName = (countryCode: string): string => {
-    if (!countryCode) return "";
-    const country = Country.getAllCountries().find(c => c.isoCode === countryCode);
-    return country?.name || countryCode;
-  };
-
   return (
     <div>
       <Banner pageName="Checkout" showLogo={true} />

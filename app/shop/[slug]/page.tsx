@@ -33,7 +33,11 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const { cartItems, addToCart, updateQuantity } = useCart() as any;
+  const { cartItems, addToCart, updateQuantity } = useCart() as {
+    cartItems: Array<{ id: string; quantity: number }>;
+    addToCart: (item: unknown) => void;
+    updateQuantity: (id: string, quantity: number) => void;
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -73,7 +77,7 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (product && product.stockStatus !== "outOfStock") {
-      const existing = cartItems.find((i: any) => i.id === product._id);
+      const existing = cartItems.find((i: { id: string; quantity: number }) => i.id === product._id);
       const currentQty = existing ? existing.quantity : 0;
       const targetQty = currentQty + quantity;
 
