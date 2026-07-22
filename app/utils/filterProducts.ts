@@ -34,7 +34,7 @@ export function getStockStatus(stockQuantity: number): 'in-stock' | 'low-stock' 
  * Filter products based on search query
  * Searches in title, description, category, and tags (case-insensitive)
  */
-function filterBySearch(products: Product[], query: string): Product[] {
+function filterBySearch<T extends Product>(products: T[], query: string): T[] {
   if (!query || query.length < 2) return products;
 
   const searchTerm = query.toLowerCase();
@@ -57,7 +57,7 @@ function filterBySearch(products: Product[], query: string): Product[] {
 /**
  * Filter products by category
  */
-function filterByCategory(products: Product[], category: string): Product[] {
+function filterByCategory<T extends Product>(products: T[], category: string): T[] {
   if (!category) return products;
   return products.filter(product => product.category === category);
 }
@@ -65,7 +65,7 @@ function filterByCategory(products: Product[], category: string): Product[] {
 /**
  * Filter products by price range
  */
-function filterByPrice(products: Product[], minPrice: string, maxPrice: string): Product[] {
+function filterByPrice<T extends Product>(products: T[], minPrice: string, maxPrice: string): T[] {
   let filtered = products;
 
   if (minPrice) {
@@ -89,7 +89,7 @@ function filterByPrice(products: Product[], minPrice: string, maxPrice: string):
  * Filter products by availability (stock status)
  * Uses OR logic: products matching ANY selected status are included
  */
-function filterByAvailability(products: Product[], availability: string[]): Product[] {
+function filterByAvailability<T extends Product>(products: T[], availability: string[]): T[] {
   if (!availability || availability.length === 0) return products;
 
   return products.filter(product => {
@@ -102,7 +102,7 @@ function filterByAvailability(products: Product[], availability: string[]): Prod
  * Main filter function - applies all filters with AND logic
  * Multiple filters must ALL match for a product to be included
  */
-export function filterProducts(products: Product[], filters: FilterCriteria): Product[] {
+export function filterProducts<T extends Product>(products: T[], filters: FilterCriteria): T[] {
   let filtered = products;
 
   // Apply search filter

@@ -116,7 +116,7 @@ export function getPageNumbers(
  * Get pagination display text
  * Example: "Showing 13-24 of 48 products"
  */
-export function getPaginationText<T extends Product>(result: PaginationResult<T>): string {
+export function getPaginationText<T>(result: PaginationResult<T>): string {
   const { startIndex, endIndex, totalProducts } = result;
 
   if (totalProducts === 0) {

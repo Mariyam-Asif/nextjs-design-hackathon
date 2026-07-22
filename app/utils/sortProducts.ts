@@ -23,7 +23,7 @@ export type SortOption =
  * Sort products by various criteria
  * Returns a new sorted array (does not mutate original)
  */
-export function sortProducts(products: Product[], sortKey: SortOption): Product[] {
+export function sortProducts<T extends Product>(products: T[], sortKey: SortOption): T[] {
   // Create a copy to avoid mutating the original array
   const sorted = [...products];
 

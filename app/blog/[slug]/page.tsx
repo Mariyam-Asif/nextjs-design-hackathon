@@ -147,9 +147,10 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   const renderBody = (body: unknown) => {
     if (!body || !Array.isArray(body)) return null;
 
-    return body.map((block: Record<string, unknown>, i: number) => {
-      if (block._type === 'block') {
-        const text = block.children?.map((c: Record<string, unknown>) => c.text).join('') || '';
+    return body.map((block: any, i: number) => {
+      if (block && typeof block === 'object' && block._type === 'block') {
+        const children = Array.isArray(block.children) ? block.children : [];
+        const text = children.map((c: any) => c?.text || '').join('');
 
         if (block.style === 'h1') return <h1 key={i} className="text-3xl sm:text-4xl font-bold text-gray-900 my-6 leading-tight">{text}</h1>;
         if (block.style === 'h2') return <h2 key={i} className="text-2xl sm:text-3xl font-bold text-gray-900 my-5 leading-tight">{text}</h2>;
@@ -198,7 +199,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                 />
               ) : post.localImage ? (
                 <Image
-                  src={post.localImage}
+                  src={post.localImage as any}
                   alt={post.title}
                   fill
                   className="object-cover"

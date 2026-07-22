@@ -83,7 +83,7 @@ export default function Navbar() {
   }, [isMenuOpen]);
 
   // Calculate total cart items
-  const cartItemCount = cartItems.reduce((total: number, item: { quantity: number }) => total + item.quantity, 0);
+  const cartItemCount: number = (Array.isArray(cartItems) ? cartItems : []).reduce((total: number, item: any) => total + (item?.quantity || 0), 0);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

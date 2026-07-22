@@ -60,14 +60,15 @@ const ProductCard = ({
       stockStatus,
     });
   };
-  const stockTitle =
-    stockStatus === "inStock"
-      ? "In Stock"
-      : stockStatus === "lowStock"
-        ? "Low Stock"
-        : stockStatus === "outOfStock"
-          ? "Out Of Stock"
-          : "";
+  const isLowStock = stockStatus === "lowStock" || (stockQuantity !== undefined && stockQuantity > 0 && stockQuantity <= 5);
+  const isOutOfStock = stockStatus === "outOfStock" || stockQuantity === 0;
+
+  const stockTitle = isOutOfStock
+    ? "Out of Stock"
+    : isLowStock
+      ? (stockQuantity ? `Only ${stockQuantity} left` : "Low Stock")
+      : "In Stock";
+
   return (
     <article className="relative flex flex-col items-start group">
       <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative">
@@ -88,6 +89,16 @@ const ProductCard = ({
             {discountPercentage}
           </div>
         )}
+        {isOutOfStock && (
+          <div className="absolute top-6 left-6 bg-red-600 text-white rounded-full px-3 py-1 text-xs font-bold shadow-xs">
+            Out of Stock
+          </div>
+        )}
+        {isLowStock && !isOutOfStock && (
+          <div className="absolute top-6 left-6 bg-amber-500 text-white rounded-full px-3 py-1 text-xs font-bold shadow-xs">
+            Low Stock
+          </div>
+        )}
       </div>
       <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[260px]">
         <Link
@@ -97,15 +108,17 @@ const ProductCard = ({
           {title}
         </Link>
         <p className="font-medium text-sm text-[#898989]">{description}</p>
-        <div className="flex flex-row gap-4 mt-2">
-          <p className="font-semibold text-lg text-[#3A3A3A]">{currency} {price}</p>
-          {oldPrice && (
-            <p className="text-[#B0B0B0] text-sm font-normal line-through">
-              {currency} {oldPrice}
-            </p>
-          )}
+        <div className="flex flex-row justify-between items-center mt-2">
+          <div className="flex flex-row gap-2 items-center">
+            <p className="font-semibold text-lg text-[#3A3A3A]">{currency} {price}</p>
+            {oldPrice && (
+              <p className="text-[#B0B0B0] text-sm font-normal line-through">
+                {currency} {oldPrice}
+              </p>
+            )}
+          </div>
           <p
-            className={`text-sm ${stockStatus === "inStock" ? "text-green-500" : stockStatus === "lowStock" ? "text-yellow-500" : "text-red-500"}`}
+            className={`text-xs font-semibold ${isOutOfStock ? "text-red-500" : isLowStock ? "text-amber-600" : "text-emerald-600"}`}
           >
             {stockTitle}
           </p>
