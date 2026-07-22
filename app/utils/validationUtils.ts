@@ -3,7 +3,9 @@
  * Server-side validation utilities for price and stock integrity
  */
 
-import type { SanityClient } from '@sanity/client';
+import type { createClient } from 'next-sanity';
+
+type SanityClient = ReturnType<typeof createClient>;
 import type { CartItem, SanityProduct } from '../types';
 
 interface ProductValidation {

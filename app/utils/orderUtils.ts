@@ -3,7 +3,9 @@
  * Uses base-32 character set (A-Z uppercase + 2-9) for 8 characters
  * Total combinations: 23^8 = ~8 trillion
  */
-import type { SanityClient } from '@sanity/client';
+import type { createClient } from 'next-sanity';
+
+type SanityClient = ReturnType<typeof createClient>;
 
 interface CheckoutFormData {
   firstName: string;
