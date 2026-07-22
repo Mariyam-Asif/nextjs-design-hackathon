@@ -28,6 +28,7 @@ export interface CheckoutFormData {
   email: string;
   companyName?: string;
   orderNotes?: string;
+  additionalInfo?: string;
 }
 
 // Product from Sanity
