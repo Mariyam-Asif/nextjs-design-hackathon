@@ -128,7 +128,7 @@ export async function createOrder(orderData: OrderData) {
       subtotal: validatedTotal,
       total: validatedTotal,
       currency: orderCurrency,
-      additionalInfo: (formData as Record<string, any>).additionalInfo || undefined,
+      additionalInfo: formData.additionalInfo || undefined,
     };
 
     // Create order in Sanity

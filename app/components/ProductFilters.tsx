@@ -95,37 +95,50 @@ export default function ProductFilters({
       </div>
 
       {/* Category filter */}
-      {categories.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="font-medium text-sm">Category</h3>
-          <div className="space-y-2">
-            <button
-              onClick={() => handleCategoryChange('')}
-              className={`block w-full text-left px-3 py-2 rounded text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 ${
-                !filters.category
-                  ? 'bg-gray-900 text-white'
-                  : 'hover:bg-gray-100'
-              }`}
-            >
-              All Products
-            </button>
-            {categories.map(category => (
+      {(() => {
+        const displayCategories = categories.length > 0 ? categories : [
+          { _id: 'cat-dining', name: 'Dining', slug: { current: 'Dining' } },
+          { _id: 'cat-living', name: 'Living', slug: { current: 'Living' } },
+          { _id: 'cat-bedroom', name: 'Bedroom', slug: { current: 'Bedroom' } },
+        ];
+
+        return (
+          <div className="space-y-3">
+            <h3 className="font-medium text-sm text-gray-900">Category</h3>
+            <div className="space-y-2">
               <button
-                key={category._id}
-                onClick={() => handleCategoryChange(category.slug.current)}
-                className={`block w-full text-left px-3 py-2 rounded text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 ${
-                  filters.category === category.slug.current
-                    ? 'bg-gray-900 text-white'
-                    : 'hover:bg-gray-100'
+                onClick={() => handleCategoryChange('')}
+                className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] ${
+                  !filters.category
+                    ? 'bg-[#B88E2F] text-white'
+                    : 'hover:bg-gray-100 text-gray-700'
                 }`}
-                aria-pressed={filters.category === category.slug.current}
               >
-                {category.name}
+                All Products
               </button>
-            ))}
+              {displayCategories.map(cat => {
+                const isSelected = filters.category && (
+                  filters.category.toLowerCase() === cat.name.toLowerCase() ||
+                  filters.category.toLowerCase() === cat.slug.current.toLowerCase()
+                );
+                return (
+                  <button
+                    key={cat._id}
+                    onClick={() => handleCategoryChange(cat.name)}
+                    className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] ${
+                      isSelected
+                        ? 'bg-[#B88E2F] text-white font-semibold'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Price range filter */}
       <div className="space-y-3">

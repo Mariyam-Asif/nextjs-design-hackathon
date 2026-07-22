@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import close_icon from "@/public/close-sidebar.svg";
 import line from "@/public/line-4.svg";
 import remove_icon from "@/public/remove_icon.svg";
@@ -76,9 +77,21 @@ export default function CartSidebar({isVisible, onClose}:CartSidebarProps) {
 
           return (
           <div key={item.id} className="flex items-start space-x-4 cart-item-hover-effect">
-            <Image src={item.imageUrl} alt={item.title} width={80} height={80} className="flex-shrink-0"/>
+            <Link
+              href={`/shop/${item.id}`}
+              onClick={onClose}
+              className="flex-shrink-0 hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded"
+            >
+              <Image src={item.imageUrl} alt={item.title} width={80} height={80} className="rounded-md object-cover"/>
+            </Link>
             <div className="flex-grow min-w-0">
-              <h3 className="font-normal text-base">{item.title}</h3>
+              <Link
+                href={`/shop/${item.id}`}
+                onClick={onClose}
+                className="font-semibold text-base text-gray-900 hover:text-[#B88E2F] transition-colors block truncate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded"
+              >
+                {item.title}
+              </Link>
 
               {/* Stock Status Indicators */}
               {isOutOfStock && (

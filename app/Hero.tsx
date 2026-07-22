@@ -1,7 +1,6 @@
 import Image from "next/image";
 import hero from "@/public/hero-image.jpg";
 import Link from "next/link";
-import Head from "next/head";
 import { client } from "@/sanity/lib/client";
 
 async function fetchHero() {
@@ -28,53 +27,49 @@ export default async function Hero() {
   const heroData = await fetchHero();
 
   return (
-    <>
-    {/* Preloading hero image*/}
-    <Head>
-      <link
-      rel="preload"
-      href={heroData?.backgroundImage || "/hero-image.jpg"}
-      as="image"
-      type="image/jpg"
-      crossOrigin="anonymous"
-      />
-    </Head>
-    <div className="relative w-full h-[50vh] sm:h-[60vh] sm:w-[140vw] md:w-[100vw] md:h-[70vh] lg:h-[90vh] overflow-hidden">
+    <section aria-label="Hero section" className="relative w-full h-[65vh] sm:h-[75vh] lg:h-[88vh] min-h-[500px] max-h-[850px] overflow-hidden bg-gray-100">
       <Image
         src={heroData?.backgroundImage || hero}
-        alt="image of a living room with furnitures."
-        layout="fill"
-        className="object-cover object-center sm:object-top md:object-center lg:object-center transition-transform duration-700 hover:scale-105"
+        alt="Featured living room furniture collection"
+        fill
+        className="object-cover object-center transition-transform duration-700 hover:scale-103"
         priority
       />
-      <div className="absolute top-[20%] right-[5%] md:top-[28%] md:right-[4%] lg:top-[30%] lg:right-[5%] xl:top-[25%] xl:right-[5%] 2xl:top-[22%] 2xl:right-[6%] bg-[#FFF3E3] w-[50%] sm:w-[40%] md:w-[40%] lg:w-[38%] h-auto flex flex-col items-center justify-between p-6 rounded-xl transform transition-transform duration-500 hover:-translate-y-3 hover:shadow-2xl">
-        <div className="h-full space-y-4">
-          <h3 className="text-[#333333] text-xs sm:text-sm md:text-base font-semibold transition-opacity saturate-50 hover:opacity-80">
+      
+      {/* Floating CTA Overlay Box */}
+      <div className="absolute top-1/2 -translate-y-1/2 right-4 sm:right-8 lg:right-14 xl:right-20 bg-[#FFF3E3] w-[90%] sm:w-[80%] md:w-[480px] lg:w-[540px] p-6 sm:p-8 lg:p-10 rounded-2xl shadow-2xl backdrop-blur-xs border border-[#F5E6D3]/60 transition-all duration-300 hover:shadow-3xl">
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <span className="text-[#333333] text-xs sm:text-sm font-semibold tracking-wider uppercase text-[#B88E2F]/90">
             New Arrival
-          </h3>
-          <h2 className="text-[#B88E2F] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl leading-snug font-bold transition-transform duration-500 hover:scale-105">
+          </span>
+          
+          <h1 className="text-[#B88E2F] text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight tracking-tight">
             {heroData?.headline || "Discover Our New Collection"}
-          </h2>
-          <h3 className="text-[#333333] text-xs sm:text-sm md:text-base font-medium overflow-hidden transition-opacity duration-500 hover:opacity-80">
-            {heroData?.subheadline || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis."}
-          </h3>
-          <div className="flex gap-2">
-            <button>
-              <Link href={heroData?.primaryCtaUrl || "/shop"} className="bg-[#B88E2F] text-white py-2 px-4 sm:py-3 sm:px-6 md:py-4 md:px-8 text-xs sm:text-sm md:text-base font-bold transition-all duration-500 hover:bg-[#a87726] hover:shadow-2xl hover:-translate-y-1 hover:scale-110">
-                {heroData?.primaryCtaText || "BUY NOW"}
-              </Link>
-            </button>
+          </h1>
+          
+          <p className="text-[#333333]/80 text-xs sm:text-sm md:text-base font-normal leading-relaxed">
+            {heroData?.subheadline || "Explore our latest hand-crafted furniture collection designed to elevate your living spaces with timeless elegance and modern comfort."}
+          </p>
+          
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-3 sm:pt-4">
+            <Link
+              href={heroData?.primaryCtaUrl || "/shop"}
+              className="inline-flex items-center justify-center bg-[#B88E2F] hover:bg-[#a87726] text-white font-bold py-3 px-6 sm:py-4 sm:px-10 text-xs sm:text-sm md:text-base rounded-sm tracking-wide uppercase transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFF3E3]"
+            >
+              {heroData?.primaryCtaText || "BUY NOW"}
+            </Link>
+
             {heroData?.secondaryCtaText && heroData?.secondaryCtaUrl && (
-              <button>
-                <Link href={heroData.secondaryCtaUrl} className="bg-white text-[#B88E2F] border border-[#B88E2F] py-2 px-4 sm:py-3 sm:px-6 md:py-4 md:px-8 text-xs sm:text-sm md:text-base font-bold transition-all duration-500 hover:bg-gray-50 hover:shadow-2xl hover:-translate-y-1 hover:scale-110">
-                  {heroData.secondaryCtaText}
-                </Link>
-              </button>
+              <Link
+                href={heroData.secondaryCtaUrl}
+                className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-[#B88E2F] border-2 border-[#B88E2F] font-bold py-3 px-6 sm:py-4 sm:px-8 text-xs sm:text-sm md:text-base rounded-sm tracking-wide uppercase transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFF3E3]"
+              >
+                {heroData.secondaryCtaText}
+              </Link>
             )}
           </div>
         </div>
       </div>
-    </div>
-    </>
+    </section>
   );
 }

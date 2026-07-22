@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Banner from "../components/Banner";
 import Guarantees from "../components/Guarantees";
 import { Country, State, IState } from "country-state-city";
@@ -478,9 +479,11 @@ export default function Checkout() {
                         className="rounded object-cover"
                       />
                       <div>
-                        <h4 className="text-[#9F9F9F] font-normal text-base">
-                          {item.title}
-                        </h4>
+                        <Link href={`/shop/${item.id}`} className="hover:text-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B88E2F] rounded">
+                          <h4 className="text-[#9F9F9F] font-normal text-base hover:text-[#B88E2F]">
+                            {item.title}
+                          </h4>
+                        </Link>
                         <span className="text-black font-medium text-xs">
                           X {item.quantity}
                         </span>

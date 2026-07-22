@@ -166,15 +166,17 @@ export default function ComparisonClient({ products }: ComparisonClientProps) {
                       </svg>
                     </button>
                     
-                    <div className="relative w-full h-44 overflow-hidden rounded bg-white">
-                      <Image
-                        src={product.imageUrl}
-                        alt={product.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <h3 className="font-semibold text-xl pt-4 truncate text-gray-900">{product.title}</h3>
+                    <Link href={`/shop/${product.slug || product._id}`} className="block group/link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded">
+                      <div className="relative w-full h-44 overflow-hidden rounded bg-white group-hover/link:opacity-90 transition-opacity">
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <h3 className="font-semibold text-xl pt-4 truncate text-gray-900 group-hover/link:text-[#B88E2F] transition-colors">{product.title}</h3>
+                    </Link>
                     <p className="font-medium text-base text-[#B88E2F] pt-1">
                       {product.currency || 'Rs.'} {product.price.toLocaleString()}
                     </p>

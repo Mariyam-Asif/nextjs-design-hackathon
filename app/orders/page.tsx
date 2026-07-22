@@ -214,12 +214,13 @@ export default function Orders() {
                   <p className="text-sm text-gray-600 mb-2">Items:</p>
                   <div className="flex flex-wrap gap-2">
                     {order.items.slice(0, 3).map((item, index) => (
-                      <span
+                      <Link
                         key={index}
-                        className="text-sm bg-gray-50 px-3 py-1 rounded"
+                        href="/shop"
+                        className="text-sm bg-gray-50 hover:bg-[#B88E2F]/10 hover:text-[#B88E2F] px-3 py-1 rounded transition-colors"
                       >
-                        {item.title} × {item.quantity}
-                      </span>
+                        {item.title} (x{item.quantity})
+                      </Link>
                     ))}
                     {order.items.length > 3 && (
                       <span className="text-sm text-gray-500 px-3 py-1">

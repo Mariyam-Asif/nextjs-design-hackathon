@@ -83,7 +83,7 @@ export default function Navbar() {
   }, [isMenuOpen]);
 
   // Calculate total cart items
-  const cartItemCount: number = (Array.isArray(cartItems) ? cartItems : []).reduce((total: number, item: any) => total + (item?.quantity || 0), 0);
+  const cartItemCount: number = (Array.isArray(cartItems) ? (cartItems as Array<{ quantity?: number }>) : []).reduce((total: number, item: { quantity?: number }) => total + Number(item?.quantity || 0), 0);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -269,8 +269,8 @@ export default function Navbar() {
             />
           </button>
         </div>
-        <button
-          onClick={() => {/* Profile action placeholder */}}
+        <Link
+          href="/profile"
           aria-label="Account profile"
           className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
         >
@@ -282,7 +282,7 @@ export default function Navbar() {
             height={24}
             aria-hidden="true"
           />
-        </button>
+        </Link>
         <button
           onClick={toggleSearch}
           aria-label="Search products"

@@ -44,7 +44,7 @@ export default function ProductDetailPage() {
       try {
         setLoading(true);
         const query = `
-          *[_type == "product" && slug.current == $slug][0]{
+          *[_type == "product" && (slug.current == $slug || _id == $slug)][0]{
             _id,
             title,
             price,
@@ -54,7 +54,7 @@ export default function ProductDetailPage() {
             "imageUrl": productImage.asset->url,
             stockStatus,
             stockQuantity,
-            slug
+            "slug": slug.current
           }
         `;
         const data = await client.fetch(query, { slug });
@@ -141,11 +141,11 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div>
-      <Banner pageName={product.title} showLogo={true} />
+    <div className="min-h-screen bg-white">
+      <Banner pageName={product.title} breadcrumbdName="Product Details" showLogo={false} />
 
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Product Image Gallery */}
           <div className="w-full relative">
             <ImageGallery 
@@ -153,72 +153,86 @@ export default function ProductDetailPage() {
               title={product.title} 
             />
             {product.discountPercentage && (
-              <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-16 h-16 flex items-center justify-center text-lg font-medium z-10 pointer-events-none">
+              <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-16 h-16 flex items-center justify-center text-base font-semibold z-10 pointer-events-none shadow-md">
                 {product.discountPercentage}
               </div>
             )}
           </div>
 
           {/* Product Info */}
-          <div className="flex flex-col">
-            <h1 className="text-4xl font-semibold text-[#3A3A3A] mb-4">
-              {product.title}
-            </h1>
+          <div className="flex flex-col space-y-6">
+            <div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#3A3A3A] leading-tight mb-2">
+                {product.title}
+              </h1>
+              
+              <div className="flex items-center gap-4 text-base font-medium">
+                <span className="text-3xl font-bold text-[#B88E2F]">
+                  {product.currency || 'Rs.'} {product.price}
+                </span>
 
-            <p className="text-3xl font-semibold text-[#3A3A3A] mb-4">
-              {product.currency} {product.price}
-            </p>
+                <div className="flex items-center gap-1.5 pl-4 border-l border-gray-200">
+                  <div className="flex text-amber-400">
+                    {'★'.repeat(5)}
+                  </div>
+                  <span className="text-xs font-semibold text-gray-500">(5 Customer Reviews)</span>
+                </div>
+              </div>
+            </div>
 
-            {/* Stock Status */}
-            <div className="mb-6">
+            {/* Stock Status Badge */}
+            <div className="inline-flex items-center">
               {product.stockStatus === "inStock" && (
-                <span className="text-green-500 font-medium">
-                  In Stock ({product.stockQuantity} available)
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> In Stock ({product.stockQuantity} available)
                 </span>
               )}
               {isLowStock && (
-                <span className="text-yellow-500 font-medium">
-                  Low Stock ({product.stockQuantity} left)
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                  <span className="w-2 h-2 rounded-full bg-amber-500" /> Low Stock (Only {product.stockQuantity} left)
                 </span>
               )}
               {isOutOfStock && (
-                <span className="text-red-500 font-medium">Out of Stock</span>
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+                  <span className="w-2 h-2 rounded-full bg-red-500" /> Out of Stock
+                </span>
               )}
             </div>
 
             {/* Description */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-3">Description</h2>
-              <p className="text-[#898989] leading-relaxed">
-                {product.description}
+            <div className="border-t border-b border-gray-100 py-6 space-y-2">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-900">Overview</h2>
+              <p className="text-gray-600 text-base leading-relaxed">
+                {product.description || "Elevate your interior living experience with this master-crafted furniture item. Designed for comfort, durability, and timeless aesthetic appeal."}
               </p>
             </div>
 
-            {/* Quantity Selector */}
-            <div className="mb-8">
+            {/* Quantity Selector & Actions */}
+            <div className="space-y-6 pt-2">
               <QuantitySelector
                 quantity={quantity}
                 stockQuantity={product.stockQuantity}
                 disabled={isOutOfStock}
                 onChange={setQuantity}
               />
-            </div>
 
-            {/* Add to Cart Button */}
-            <button
-              onClick={handleAddToCart}
-              disabled={isOutOfStock}
-              className={`
-                px-12 py-4 text-lg font-semibold transition-all rounded-lg shadow-sm
-                ${
-                  isOutOfStock
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-[#B88E2F] text-white hover:bg-[#9d7728] hover:scale-102 active:scale-98 focus:outline-none focus:ring-2 focus:ring-[#B88E2F] focus:ring-offset-2"
-                }
-              `}
-            >
-              {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-            </button>
+              <div className="flex flex-wrap gap-4 pt-2">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isOutOfStock}
+                  className={`
+                    flex-1 min-w-[200px] py-4 px-8 text-base font-bold rounded-xl shadow-md transition-all duration-300
+                    ${
+                      isOutOfStock
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-[#B88E2F] hover:bg-[#9d7728] text-white hover:shadow-lg active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2"
+                    }
+                  `}
+                >
+                  {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

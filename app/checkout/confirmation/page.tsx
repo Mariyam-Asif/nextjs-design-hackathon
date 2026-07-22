@@ -56,39 +56,39 @@ export default function OrderConfirmation() {
       return;
     }
 
+    const fetchOrder = async () => {
+      try {
+        const query = `*[_type == "order" && orderNumber == $orderNumber][0]{
+          orderNumber,
+          createdAt,
+          status,
+          paymentStatus,
+          paymentMethod,
+          customerInfo,
+          items,
+          subtotal,
+          total,
+          currency,
+          additionalInfo
+        }`;
+
+        const result = await client.fetch(query, { orderNumber });
+
+        if (!result) {
+          setError("Order not found");
+        } else {
+          setOrder(result);
+        }
+      } catch (err) {
+        console.error("Failed to fetch order:", err);
+        setError("Failed to load order details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchOrder();
   }, [orderNumber]);
-
-  const fetchOrder = async () => {
-    try {
-      const query = `*[_type == "order" && orderNumber == $orderNumber][0]{
-        orderNumber,
-        createdAt,
-        status,
-        paymentStatus,
-        paymentMethod,
-        customerInfo,
-        items,
-        subtotal,
-        total,
-        currency,
-        additionalInfo
-      }`;
-
-      const result = await client.fetch(query, { orderNumber });
-
-      if (!result) {
-        setError("Order not found");
-      } else {
-        setOrder(result);
-      }
-    } catch (err) {
-      console.error("Failed to fetch order:", err);
-      setError("Failed to load order details");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

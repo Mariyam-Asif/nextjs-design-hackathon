@@ -59,7 +59,11 @@ function filterBySearch<T extends Product>(products: T[], query: string): T[] {
  */
 function filterByCategory<T extends Product>(products: T[], category: string): T[] {
   if (!category) return products;
-  return products.filter(product => product.category === category);
+  const target = category.toLowerCase();
+  return products.filter(product => {
+    const pCat = product.category?.toLowerCase() || '';
+    return pCat === target || pCat.includes(target);
+  });
 }
 
 /**

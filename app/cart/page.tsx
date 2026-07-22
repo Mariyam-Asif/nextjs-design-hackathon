@@ -213,15 +213,20 @@ const getNumericPrice = (price:string):number =>{
                     item.stockStatus === 'outOfStock' ? 'opacity-60' : ''
                   }`}
                 >
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.title}
-                    width={96}
-                    height={96}
-                  />
+                  <Link href={`/shop/${item.id}`} className="hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      width={96}
+                      height={96}
+                      className="rounded-lg object-cover"
+                    />
+                  </Link>
                   <div className="flex flex-col md:flex-row justify-between md:justify-center items-start md:items-center gap-4 md:gap-14 text-[#9F9F9F] font-normal ">
                     <div className="flex flex-col gap-2">
-                      <p className="text-xl md:text-base">{item.title}</p>
+                      <Link href={`/shop/${item.id}`} className="hover:text-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded">
+                        <p className="text-xl md:text-base font-semibold text-gray-900">{item.title}</p>
+                      </Link>
                       {item.stockStatus && getStockBadge(item.stockStatus)}
                       {stockExceeded && item.stockStatus !== 'outOfStock' && (
                         <span className="text-xs text-red-600 font-medium">
