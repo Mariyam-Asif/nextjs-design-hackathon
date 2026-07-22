@@ -33,10 +33,11 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const { cartItems, addToCart, updateQuantity } = useCart() as {
+  const { cartItems, addToCart, updateQuantity, setSidebarVisible } = useCart() as {
     cartItems: Array<{ id: string; quantity: number }>;
     addToCart: (item: unknown) => void;
     updateQuantity: (id: string, quantity: number) => void;
+    setSidebarVisible: (visible: boolean) => void;
   };
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export default function ProductDetailPage() {
             description,
             discountPercentage,
             "imageUrl": productImage.asset->url,
+            "images": images[].asset->url,
             stockStatus,
             stockQuantity,
             "slug": slug.current
@@ -87,6 +89,7 @@ export default function ProductDetailPage() {
         } else {
           addToCart({
             id: product._id,
+            slug: typeof product.slug === 'string' ? product.slug : (product.slug as any)?.current || product._id,
             title: product.title,
             price: product.price,
             currency: product.currency,
@@ -98,6 +101,10 @@ export default function ProductDetailPage() {
             updateQuantity(product._id, quantity);
           }
         }
+        // Open the cart sidebar pop up
+        if (typeof setSidebarVisible === 'function') {
+          setSidebarVisible(true);
+        }
       } else {
         announce(`Cannot add more. Only ${product.stockQuantity} items are available in stock.`, "polite");
       }
@@ -106,6 +113,15 @@ export default function ProductDetailPage() {
 
   const isOutOfStock = product?.stockStatus === "outOfStock";
   const isLowStock = product?.stockStatus === "lowStock";
+
+  const galleryImages = product
+    ? [
+        product.imageUrl,
+        ...(Array.isArray((product as any).images)
+          ? (product as any).images.filter((img: string) => Boolean(img) && img !== product.imageUrl)
+          : [])
+      ].filter(Boolean)
+    : [];
 
   if (loading) {
     return (
@@ -149,7 +165,7 @@ export default function ProductDetailPage() {
           {/* Product Image Gallery */}
           <div className="w-full relative">
             <ImageGallery 
-              images={product.imageUrl ? [product.imageUrl, product.imageUrl, product.imageUrl] : []} 
+              images={galleryImages} 
               title={product.title} 
             />
             {product.discountPercentage && (

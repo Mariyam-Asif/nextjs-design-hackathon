@@ -37,24 +37,24 @@ export default async function Hero() {
       />
       
       {/* Floating CTA Overlay Box */}
-      <div className="absolute top-1/2 -translate-y-1/2 right-4 sm:right-8 lg:right-14 xl:right-20 bg-[#FFF3E3] w-[90%] sm:w-[80%] md:w-[480px] lg:w-[540px] p-6 sm:p-8 lg:p-10 rounded-2xl shadow-2xl backdrop-blur-xs border border-[#F5E6D3]/60 transition-all duration-300 hover:shadow-3xl">
-        <div className="flex flex-col gap-3 sm:gap-4">
-          <span className="text-[#333333] text-xs sm:text-sm font-semibold tracking-wider uppercase text-[#B88E2F]/90">
+      <div className="absolute top-1/2 -translate-y-1/2 right-4 sm:right-8 lg:right-12 xl:right-16 bg-[#FFF3E3]/95 w-[90%] sm:w-[380px] md:w-[420px] lg:w-[450px] p-5 sm:p-6 lg:p-7 rounded-xl shadow-xl backdrop-blur-xs border border-[#F5E6D3] transition-all duration-300">
+        <div className="flex flex-col gap-2.5 sm:gap-3">
+          <span className="text-[#333333] text-xs font-bold tracking-wider uppercase text-[#B88E2F]">
             New Arrival
           </span>
           
-          <h1 className="text-[#B88E2F] text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight tracking-tight">
+          <h1 className="text-[#B88E2F] text-xl sm:text-2xl lg:text-3xl font-bold leading-snug tracking-tight">
             {heroData?.headline || "Discover Our New Collection"}
           </h1>
           
-          <p className="text-[#333333]/80 text-xs sm:text-sm md:text-base font-normal leading-relaxed">
-            {heroData?.subheadline || "Explore our latest hand-crafted furniture collection designed to elevate your living spaces with timeless elegance and modern comfort."}
+          <p className="text-[#333333]/80 text-xs sm:text-sm font-normal leading-relaxed">
+            {heroData?.subheadline || "Explore our latest hand-crafted furniture collection designed to elevate your living spaces with timeless elegance."}
           </p>
           
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-3 sm:pt-4">
+          <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               href={heroData?.primaryCtaUrl || "/shop"}
-              className="inline-flex items-center justify-center bg-[#B88E2F] hover:bg-[#a87726] text-white font-bold py-3 px-6 sm:py-4 sm:px-10 text-xs sm:text-sm md:text-base rounded-sm tracking-wide uppercase transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFF3E3]"
+              className="inline-flex items-center justify-center bg-[#B88E2F] hover:bg-[#a87726] text-white font-bold py-2.5 px-6 sm:py-3 sm:px-7 text-xs sm:text-sm rounded-sm tracking-wider uppercase transition-all duration-300 shadow-sm hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFF3E3]"
             >
               {heroData?.primaryCtaText || "BUY NOW"}
             </Link>
@@ -62,7 +62,7 @@ export default async function Hero() {
             {heroData?.secondaryCtaText && heroData?.secondaryCtaUrl && (
               <Link
                 href={heroData.secondaryCtaUrl}
-                className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-[#B88E2F] border-2 border-[#B88E2F] font-bold py-3 px-6 sm:py-4 sm:px-8 text-xs sm:text-sm md:text-base rounded-sm tracking-wide uppercase transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFF3E3]"
+                className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-[#B88E2F] border border-[#B88E2F] font-bold py-2.5 px-5 sm:py-3 sm:px-6 text-xs sm:text-sm rounded-sm tracking-wider uppercase transition-all duration-300 shadow-2xs hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFF3E3]"
               >
                 {heroData.secondaryCtaText}
               </Link>

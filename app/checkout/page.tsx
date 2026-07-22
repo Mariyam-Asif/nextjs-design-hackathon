@@ -36,6 +36,7 @@ interface PriceUpdateNotice {
 
 interface CartItem {
   id: string;
+  slug?: string;
   title: string;
   imageUrl: string;
   price: string;
@@ -479,7 +480,7 @@ export default function Checkout() {
                         className="rounded object-cover"
                       />
                       <div>
-                        <Link href={`/shop/${item.id}`} className="hover:text-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B88E2F] rounded">
+                        <Link href={`/shop/${item.slug || item.id}`} className="hover:text-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B88E2F] rounded">
                           <h4 className="text-[#9F9F9F] font-normal text-base hover:text-[#B88E2F]">
                             {item.title}
                           </h4>

@@ -9,6 +9,7 @@ import { useCart } from "../CartContext";
 
 interface CartItem {
   id: string;
+  slug?: string;
   title: string;
   price: string;
   imageUrl: string;
@@ -213,7 +214,7 @@ const getNumericPrice = (price:string):number =>{
                     item.stockStatus === 'outOfStock' ? 'opacity-60' : ''
                   }`}
                 >
-                  <Link href={`/shop/${item.id}`} className="hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded">
+                  <Link href={`/shop/${(item as { slug?: string; id: string }).slug || item.id}`} className="hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded">
                     <Image
                       src={item.imageUrl}
                       alt={item.title}
@@ -224,7 +225,7 @@ const getNumericPrice = (price:string):number =>{
                   </Link>
                   <div className="flex flex-col md:flex-row justify-between md:justify-center items-start md:items-center gap-4 md:gap-14 text-[#9F9F9F] font-normal ">
                     <div className="flex flex-col gap-2">
-                      <Link href={`/shop/${item.id}`} className="hover:text-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded">
+                      <Link href={`/shop/${item.slug || item.id}`} className="hover:text-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded">
                         <p className="text-xl md:text-base font-semibold text-gray-900">{item.title}</p>
                       </Link>
                       {item.stockStatus && getStockBadge(item.stockStatus)}

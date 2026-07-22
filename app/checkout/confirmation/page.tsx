@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Banner from "@/app/components/Banner";
 import Guarantees from "@/app/components/Guarantees";
@@ -41,7 +41,7 @@ interface Order {
   additionalInfo?: string;
 }
 
-export default function OrderConfirmation() {
+function OrderConfirmationContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("order");
 
@@ -341,5 +341,19 @@ export default function OrderConfirmation() {
         <Guarantees />
       </div>
     </div>
+  );
+}
+
+export default function OrderConfirmation() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#B88E2F]"></div>
+        </div>
+      }
+    >
+      <OrderConfirmationContent />
+    </Suspense>
   );
 }

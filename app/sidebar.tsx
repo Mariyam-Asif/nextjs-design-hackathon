@@ -9,6 +9,7 @@ import { useCart } from "./CartContext";
 import { useRouter } from "next/navigation";
 interface CartItem {
   id: string;
+  slug?: string;
   title:string;
   price:string;
   quantity:number;
@@ -78,7 +79,7 @@ export default function CartSidebar({isVisible, onClose}:CartSidebarProps) {
           return (
           <div key={item.id} className="flex items-start space-x-4 cart-item-hover-effect">
             <Link
-              href={`/shop/${item.id}`}
+              href={`/shop/${item.slug || item.id}`}
               onClick={onClose}
               className="flex-shrink-0 hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded"
             >
@@ -86,7 +87,7 @@ export default function CartSidebar({isVisible, onClose}:CartSidebarProps) {
             </Link>
             <div className="flex-grow min-w-0">
               <Link
-                href={`/shop/${item.id}`}
+                href={`/shop/${item.slug || item.id}`}
                 onClick={onClose}
                 className="font-semibold text-base text-gray-900 hover:text-[#B88E2F] transition-colors block truncate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded"
               >

@@ -43,7 +43,14 @@ export const product = defineType({
             name: "productImage",
             type: "image",
             validation: (rule) => rule.required(),
-            title: "Product Image"
+            title: "Product Main Image"
+        },
+        {
+            name: "images",
+            type: "array",
+            title: "Product Gallery Images",
+            description: "Additional images for the product detail gallery",
+            of: [{ type: "image", options: { hotspot: true } }]
         },
         {
             name: "price",

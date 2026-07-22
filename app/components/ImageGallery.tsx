@@ -55,7 +55,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
       </div>
 
       {/* Thumbnails Row */}
-      {images.length > 1 && (
+      {images.length >= 1 && (
         <div
           role="tablist"
           aria-label="Product thumbnails"

@@ -19,7 +19,7 @@ interface ProductCardProps {
   discountPercentage?: string;
   stockStatus: string;
   stockQuantity?: number;
-  onAddToCart: (item: { id: string; title: string; price: string; currency: string; imageUrl: string; stockQuantity?: number; stockStatus?: string }) => void;
+  onAddToCart: (item: { id: string; slug?: string; title: string; price: string; currency: string; imageUrl: string; stockQuantity?: number; stockStatus?: string }) => void;
 }
 const ProductCard = ({
   id,
@@ -41,6 +41,8 @@ const ProductCard = ({
   const isWishlisted = isInWishlist(id);
   const isCompared = isInComparison(id);
 
+  const targetSlug = typeof slug === 'string' && slug.trim() !== '' && slug !== '[object Object]' ? slug : id;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -52,6 +54,7 @@ const ProductCard = ({
 
     onAddToCart({
       id,
+      slug: targetSlug,
       title,
       price,
       currency,
@@ -68,11 +71,8 @@ const ProductCard = ({
     : isLowStock
       ? (stockQuantity ? `Only ${stockQuantity} left` : "Low Stock")
       : "In Stock";
-
-  const targetSlug = typeof slug === 'string' && slug.trim() !== '' && slug !== '[object Object]' ? slug : id;
-
   return (
-    <article className="relative flex flex-col items-start group rounded-lg overflow-hidden">
+    <article className="relative flex flex-col h-full w-full group rounded-xl overflow-hidden border border-gray-100 shadow-2xs hover:shadow-md transition-all duration-300 bg-[#F4F5F7]">
       {/* Background card link */}
       <Link
         href={`/shop/${targetSlug}`}
@@ -80,47 +80,49 @@ const ProductCard = ({
         aria-label={`View details for ${title}`}
       />
 
-      <div className="w-full lg:w-[260px] h-[250px] lg:h-[300px] overflow-hidden relative pointer-events-none">
+      <div className="w-full h-[240px] sm:h-[280px] overflow-hidden relative pointer-events-none bg-gray-100">
         <Image
           src={imageUrl}
           alt={title}
-          width={305}
-          height={375}
-          className="img"
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {discountPercentage && (
-          <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-12 h-12 flex items-center justify-center text-base font-medium z-1">
+          <div className="absolute top-4 right-4 bg-[#E97171] text-white rounded-full w-11 h-11 flex items-center justify-center text-sm font-semibold z-1 shadow-xs">
             {discountPercentage}
           </div>
         )}
         {isOutOfStock && (
-          <div className="absolute top-6 left-6 bg-red-600 text-white rounded-full px-3 py-1 text-xs font-bold shadow-xs z-1">
+          <div className="absolute top-4 left-4 bg-red-600 text-white rounded-full px-3 py-1 text-xs font-bold shadow-xs z-1">
             Out of Stock
           </div>
         )}
         {isLowStock && !isOutOfStock && (
-          <div className="absolute top-6 left-6 bg-amber-500 text-white rounded-full px-3 py-1 text-xs font-bold shadow-xs z-1">
+          <div className="absolute top-4 left-4 bg-amber-500 text-white rounded-full px-3 py-1 text-xs font-bold shadow-xs z-1">
             Low Stock
           </div>
         )}
       </div>
 
-      <div className="bg-[#F4F5F7] p-3 lg:p-4 w-full lg:w-[260px] pointer-events-none">
-        <h3 className="font-semibold text-xl text-[#3A3A3A] group-hover:text-[#B88E2F] transition-colors">
-          {title}
-        </h3>
-        <p className="font-medium text-sm text-[#898989] truncate">{description}</p>
-        <div className="flex flex-row justify-between items-center mt-2">
+      <div className="bg-[#F4F5F7] p-4 sm:p-5 w-full flex-grow flex flex-col justify-between pointer-events-none space-y-2">
+        <div>
+          <h3 className="font-bold text-lg sm:text-xl text-[#3A3A3A] group-hover:text-[#B88E2F] transition-colors leading-snug line-clamp-1">
+            {title}
+          </h3>
+          <p className="font-medium text-xs sm:text-sm text-[#898989] line-clamp-1 mt-1">{description}</p>
+        </div>
+
+        <div className="flex flex-row justify-between items-center pt-2 border-t border-gray-200/60">
           <div className="flex flex-row gap-2 items-center">
-            <p className="font-semibold text-lg text-[#3A3A3A]">{currency} {price}</p>
+            <p className="font-bold text-base sm:text-lg text-[#3A3A3A]">{currency} {price}</p>
             {oldPrice && (
-              <p className="text-[#B0B0B0] text-sm font-normal line-through">
+              <p className="text-[#B0B0B0] text-xs sm:text-sm font-normal line-through">
                 {currency} {oldPrice}
               </p>
             )}
           </div>
           <p
-            className={`text-xs font-semibold ${isOutOfStock ? "text-red-500" : isLowStock ? "text-amber-600" : "text-emerald-600"}`}
+            className={`text-xs font-bold ${isOutOfStock ? "text-red-500" : isLowStock ? "text-amber-600" : "text-emerald-600"}`}
           >
             {stockTitle}
           </p>
@@ -128,7 +130,7 @@ const ProductCard = ({
       </div>
 
       {/* Hover overlay section */}
-      <div className="absolute top-0 left-0 right-0 bottom-0 w-full lg:w-[260px] flex flex-col justify-center items-center opacity-0 group-hover:opacity-90 group-focus-within:opacity-90 transition-opacity duration-300 bg-[#3A3A3A]/85 p-4 space-y-3 z-10">
+      <div className="absolute inset-0 w-full h-full flex flex-col justify-center items-center opacity-0 group-hover:opacity-95 group-focus-within:opacity-95 transition-opacity duration-300 bg-[#3A3A3A]/85 p-4 space-y-3 z-10">
         {/* Clickable overlay backdrop */}
         <Link
           href={`/shop/${targetSlug}`}
