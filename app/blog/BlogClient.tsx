@@ -9,7 +9,7 @@ import Guarantees from '../components/Guarantees';
 import blog_0 from "@/public/blog-0.jpg";
 import blog_1 from "@/public/blog-1.jpg";
 import blog_2 from "@/public/blog-2.jpg";
-import admin from "@/public/admin_icon.svg";
+import admin from "@/public/admin.svg";
 import dateIcon from "@/public/date_icon.svg";
 import tagIcon from "@/public/tag_icon.svg";
 import post0 from "@/public/post0.png";

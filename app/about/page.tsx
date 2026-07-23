@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import Banner from "../components/Banner";
 import Guarantees from "../components/Guarantees";
+import sustainableIcon from "@/public/sustainable-icon.svg";
+import qualityIcon from "@/public/quality-icon.svg";
+import warrantyIcon from "@/public/warranty-icon.svg";
 
 export default function AboutPage() {
   return (
@@ -55,7 +58,12 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-2xl shadow-xs border border-gray-100 text-center space-y-3">
               <div className="w-14 h-14 rounded-full bg-[#B88E2F]/10 text-[#B88E2F] flex items-center justify-center mx-auto text-2xl font-bold">
-                🌱
+                <Image
+                  src={sustainableIcon}
+                  alt=""
+                  className="w-5 h-5 transition-transform hover:scale-110"
+                  aria-hidden="true"
+                />
               </div>
               <h3 className="text-lg font-bold text-gray-900">Sustainable Materials</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -65,7 +73,12 @@ export default function AboutPage() {
 
             <div className="bg-white p-6 rounded-2xl shadow-xs border border-gray-100 text-center space-y-3">
               <div className="w-14 h-14 rounded-full bg-[#B88E2F]/10 text-[#B88E2F] flex items-center justify-center mx-auto text-2xl font-bold">
-                🛠️
+                <Image
+                  src={qualityIcon}
+                  alt=""
+                  className="w-5 h-5 transition-transform hover:scale-110"
+                  aria-hidden="true"
+                />
               </div>
               <h3 className="text-lg font-bold text-gray-900">Master Craftsmanship</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -75,7 +88,12 @@ export default function AboutPage() {
 
             <div className="bg-white p-6 rounded-2xl shadow-xs border border-gray-100 text-center space-y-3">
               <div className="w-14 h-14 rounded-full bg-[#B88E2F]/10 text-[#B88E2F] flex items-center justify-center mx-auto text-2xl font-bold">
-                🛡️
+                <Image
+                  src={warrantyIcon}
+                  alt=""
+                  className="w-5 h-5 transition-transform hover:scale-110"
+                  aria-hidden="true"
+                />
               </div>
               <h3 className="text-lg font-bold text-gray-900">Guaranteed Quality</h3>
               <p className="text-sm text-gray-600 leading-relaxed">

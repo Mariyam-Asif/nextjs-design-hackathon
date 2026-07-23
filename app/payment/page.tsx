@@ -18,28 +18,28 @@ export default function PaymentOptionsPage() {
           {/* Payment Options Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-              <div className="text-2xl font-bold text-[#B88E2F]">💳 Credit & Debit Cards</div>
+              <div className="text-2xl font-bold text-[#B88E2F]">Credit & Debit Cards</div>
               <p className="text-sm text-gray-600 leading-relaxed">
                 We accept all major international cards including Visa, MasterCard, American Express, and Discover. All transactions are SSL encrypted.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-              <div className="text-2xl font-bold text-[#B88E2F]">💵 Cash on Delivery (COD)</div>
+              <div className="text-2xl font-bold text-[#B88E2F]">Cash on Delivery (COD)</div>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Pay with cash directly to our delivery representative upon inspecting your furniture items at your home address.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-              <div className="text-2xl font-bold text-[#B88E2F]">🏦 Direct Bank Transfer</div>
+              <div className="text-2xl font-bold text-[#B88E2F]">Direct Bank Transfer</div>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Transfer payment directly into our official corporate bank account. Instructions are provided upon completing your checkout.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-              <div className="text-2xl font-bold text-[#B88E2F]">🔒 Secure Online Gateway</div>
+              <div className="text-2xl font-bold text-[#B88E2F]">Secure Online Gateway</div>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Integrated with 256-bit encrypted security protocols to ensure zero unauthorized access to your account details.
               </p>

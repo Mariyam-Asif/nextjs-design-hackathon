@@ -10,6 +10,7 @@ import Guarantees from "@/app/components/Guarantees";
 import ImageGallery from "@/app/components/ImageGallery";
 import QuantitySelector from "@/app/components/QuantitySelector";
 import { announce } from "@/app/utils/announcer";
+import ShareModal from "@/app/components/ShareModal";
 
 interface Product {
   _id: string;
@@ -33,6 +34,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const { cartItems, addToCart, updateQuantity, setSidebarVisible } = useCart() as {
     cartItems: Array<{ id: string; quantity: number }>;
     addToCart: (item: unknown) => void;
@@ -89,7 +91,7 @@ export default function ProductDetailPage() {
         } else {
           addToCart({
             id: product._id,
-            slug: typeof product.slug === 'string' ? product.slug : (product.slug as any)?.current || product._id,
+            slug: typeof product.slug === 'string' ? product.slug : (product.slug as { current?: string })?.current || product._id,
             title: product.title,
             price: product.price,
             currency: product.currency,
@@ -117,8 +119,8 @@ export default function ProductDetailPage() {
   const galleryImages = product
     ? [
         product.imageUrl,
-        ...(Array.isArray((product as any).images)
-          ? (product as any).images.filter((img: string) => Boolean(img) && img !== product.imageUrl)
+        ...(Array.isArray((product as { images?: string[] }).images)
+          ? (product as { images?: string[] }).images!.filter((img: string) => Boolean(img) && img !== product.imageUrl)
           : [])
       ].filter(Boolean)
     : [];
@@ -247,6 +249,15 @@ export default function ProductDetailPage() {
                 >
                   {isOutOfStock ? "Out of Stock" : "Add to Cart"}
                 </button>
+
+                <button
+                  onClick={() => setIsShareOpen(true)}
+                  className="py-4 px-6 border-2 border-gray-300 hover:border-[#B88E2F] hover:text-[#B88E2F] text-gray-700 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F]"
+                  aria-label={`Share ${product.title}`}
+                >
+                  <span>🔗</span>
+                  <span>Share</span>
+                </button>
               </div>
             </div>
           </div>
@@ -254,6 +265,13 @@ export default function ProductDetailPage() {
       </div>
 
       <Guarantees />
+
+      <ShareModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        title={product.title}
+        slug={typeof product.slug === 'string' ? product.slug : (product.slug as { current?: string })?.current || product._id}
+      />
     </div>
   );
 }

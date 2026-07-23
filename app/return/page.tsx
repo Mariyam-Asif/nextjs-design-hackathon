@@ -1,6 +1,10 @@
 import Link from "next/link";
 import Banner from "../components/Banner";
 import Guarantees from "../components/Guarantees";
+import Image from "next/image";
+import calendarIcon from "@/public/calendar-icon.svg";
+import pickupIcon from "@/public/pickup-icon.svg";
+import timeIcon from "@/public/hours.svg";
 
 export default function ReturnPolicyPage() {
   return (
@@ -19,19 +23,34 @@ export default function ReturnPolicyPage() {
           {/* Key Return Highlights */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-[#FFF3E3]/50 border border-[#F5E6D3] p-6 rounded-2xl">
-              <span className="text-2xl mb-2 block">📅</span>
+              <Image
+                src={calendarIcon}
+                alt=""
+                className="w-5 h-5 mb-2 transition-transform hover:scale-110"
+                aria-hidden="true"
+                />
               <h3 className="font-bold text-gray-900 text-lg mb-1">30-Day Window</h3>
               <p className="text-sm text-gray-600">Return any item within 30 days of delivery for a full refund.</p>
             </div>
 
             <div className="bg-[#FFF3E3]/50 border border-[#F5E6D3] p-6 rounded-2xl">
-              <span className="text-2xl mb-2 block">🚚</span>
+              <Image
+                src={pickupIcon}
+                alt=""
+                className="w-5 h-5 mb-2 transition-transform hover:scale-110"
+                aria-hidden="true"
+                />
               <h3 className="font-bold text-gray-900 text-lg mb-1">Free Damaged Returns</h3>
               <p className="text-sm text-gray-600">Free pickup for items damaged during transit or manufacturing flaws.</p>
             </div>
 
             <div className="bg-[#FFF3E3]/50 border border-[#F5E6D3] p-6 rounded-2xl">
-              <span className="text-2xl mb-2 block">💳</span>
+              <Image
+                src={timeIcon}
+                alt=""
+                className="w-5 h-5 mb-2 transition-transform hover:scale-110"
+                aria-hidden="true"
+                />
               <h3 className="font-bold text-gray-900 text-lg mb-1">Fast Processing</h3>
               <p className="text-sm text-gray-600">Refunds processed back to your original payment method within 3–5 business days.</p>
             </div>

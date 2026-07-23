@@ -3,7 +3,7 @@ import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
 import Banner from '../../components/Banner';
 import Guarantees from '../../components/Guarantees';
-import admin from "@/public/admin_icon.svg";
+import admin from "@/public/admin.svg";
 import dateIcon from "@/public/date_icon.svg";
 import tagIcon from "@/public/tag_icon.svg";
 import post0 from "@/public/post0.png";

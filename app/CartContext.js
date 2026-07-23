@@ -3,6 +3,7 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
 import { client } from "@/sanity/lib/client";
 import { announce } from "./utils/announcer";
+import CartSidebar from "./sidebar";
 
 const CartContext = createContext();
 
@@ -13,6 +14,12 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [priceChanges, setPriceChanges] = useState([]);
   const [isRefreshingPrices, setIsRefreshingPrices] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const openSidebar = () => setIsSidebarOpen(true);
+  const closeSidebar = () => setIsSidebarOpen(false);
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const setSidebarVisible = (visible) => setIsSidebarOpen(Boolean(visible));
 
   // Helper to parse price strings
   const parsePrice = (price) => {
@@ -264,9 +271,15 @@ export const CartProvider = ({ children }) => {
         clearCart,
         refreshPrices: () => refreshPrices(cartItems),
         clearPriceChanges,
+        isSidebarOpen,
+        openSidebar,
+        closeSidebar,
+        toggleSidebar,
+        setSidebarVisible,
       }}
     >
       {children}
+      <CartSidebar isVisible={isSidebarOpen} onClose={closeSidebar} />
     </CartContext.Provider>
   );
 };
