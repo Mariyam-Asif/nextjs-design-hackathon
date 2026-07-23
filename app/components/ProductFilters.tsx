@@ -34,25 +34,9 @@ export default function ProductFilters({
   };
 
   const handlePriceChange = (minPrice: string, maxPrice: string) => {
-    // Validate and clamp to available range
-    let min = minPrice ? parseFloat(minPrice) : '';
-    let max = maxPrice ? parseFloat(maxPrice) : '';
-
-    if (min !== '' && !isNaN(Number(min))) {
-      min = Math.max(priceRange.min, Number(min));
-    }
-    if (max !== '' && !isNaN(Number(max))) {
-      max = Math.min(priceRange.max, Number(max));
-    }
-
-    // Validate min <= max
-    if (min !== '' && max !== '' && Number(min) > Number(max)) {
-      return; // Invalid range, don't update
-    }
-
     onChange({
-      minPrice: min !== '' ? String(min) : '',
-      maxPrice: max !== '' ? String(max) : '',
+      minPrice: minPrice,
+      maxPrice: maxPrice,
     });
   };
 

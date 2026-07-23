@@ -23,7 +23,8 @@ interface Product {
   discountPercentage?: string;
   imageUrl: string;
   tags?: string[];
-  stockQuantity: number;
+  stockStatus?: string;
+  stockQuantity?: number;
   slug: string;
   category?: string;
   displayOrder?: number;
@@ -45,11 +46,19 @@ interface ShopClientProps {
 
 export default function ShopClient({ products, categories }: ShopClientProps) {
   // Ensure robust number parsing for filter/sort operations
-  const sanitizedProducts = products.map(p => ({
-    ...p,
-    price: typeof p.price === 'string' ? parseFloat(p.price) || 0 : Number(p.price) || 0,
-    stockQuantity: typeof p.stockQuantity === 'string' ? parseInt(p.stockQuantity, 10) || 0 : Number(p.stockQuantity) || 0,
-  }));
+  const sanitizedProducts = products.map(p => {
+    const status = p.stockStatus || (p.stockQuantity === 0 ? 'outOfStock' : 'inStock');
+    const rawQty = typeof p.stockQuantity === 'string' ? parseInt(p.stockQuantity, 10) : Number(p.stockQuantity);
+    const qty = (!isNaN(rawQty) && rawQty >= 0) ? rawQty : (status === 'outOfStock' ? 0 : 10);
+
+    return {
+      ...p,
+      price: typeof p.price === 'string' ? parseFloat(p.price) || 0 : Number(p.price) || 0,
+      stockStatus: status,
+      stockQuantity: qty,
+      slug: p.slug && p.slug.trim() !== '' ? p.slug : p._id,
+    };
+  });
 
   const { filters, updateState, resetFilters } = useShopState();
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -97,9 +106,9 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
       : description || "";
   };
 
-  const getStockStatusCamel = (quantity: number) => {
-    if (quantity === 0) return 'outOfStock';
-    if (quantity <= 5) return 'lowStock';
+  const getStockStatusCamel = (product: { stockStatus?: string; stockQuantity: number }) => {
+    if (product.stockStatus === 'outOfStock' || product.stockQuantity === 0) return 'outOfStock';
+    if (product.stockStatus === 'lowStock' || (product.stockQuantity > 0 && product.stockQuantity <= 5)) return 'lowStock';
     return 'inStock';
   };
 
@@ -230,7 +239,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                         currency={product.currency || 'Rs.'}
                         oldPrice={oldPrice}
                         discountPercentage={formattedDiscount}
-                        stockStatus={getStockStatusCamel(product.stockQuantity)}
+                        stockStatus={product.stockStatus || getStockStatusCamel(product)}
                         stockQuantity={product.stockQuantity}
                         onAddToCart={handleAddToCart}
                       />

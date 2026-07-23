@@ -18,7 +18,8 @@ interface Product {
   discountPercentage?: string;
   imageUrl: string;
   tags?: string[];
-  stockQuantity: number;
+  stockStatus?: string;
+  stockQuantity?: number;
   slug: string;
   category?: string;
   displayOrder?: number;
@@ -34,6 +35,7 @@ export default function ComparisonClient({ products }: ComparisonClientProps) {
   const { addToCart } = useCart() as unknown as {
     addToCart: (item: {
       id: string;
+      slug?: string;
       title: string;
       price: string;
       currency: string;
@@ -61,20 +63,23 @@ export default function ComparisonClient({ products }: ComparisonClientProps) {
   };
 
   const handleAddToCart = (product: Product) => {
-    const getStockStatusCamel = (quantity: number) => {
-      if (quantity === 0) return 'outOfStock';
-      if (quantity <= 5) return 'lowStock';
-      return 'inStock';
-    };
+    const status = product.stockStatus || (product.stockQuantity === 0 ? 'outOfStock' : 'inStock');
+    if (status === 'outOfStock') {
+      return;
+    }
+
+    const rawQty = typeof product.stockQuantity === 'number' ? product.stockQuantity : Number(product.stockQuantity);
+    const effectiveQty = (!isNaN(rawQty) && rawQty > 0) ? rawQty : 99;
 
     addToCart({
       id: product._id,
+      slug: product.slug || product._id,
       title: product.title,
       price: product.price.toString(),
       currency: product.currency || 'Rs.',
       imageUrl: product.imageUrl,
-      stockQuantity: product.stockQuantity,
-      stockStatus: getStockStatusCamel(product.stockQuantity),
+      stockQuantity: effectiveQty,
+      stockStatus: status,
     });
     setSidebarVisible(true);
   };
@@ -326,9 +331,14 @@ export default function ComparisonClient({ products }: ComparisonClientProps) {
 
                           <button
                             onClick={() => handleAddToCart(product)}
-                            className="w-full mt-10 bg-[#B88E2F] hover:bg-[#9E7A28] text-white font-semibold py-4 px-6 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#B88E2F] shadow-sm text-center"
+                            disabled={product.stockStatus === 'outOfStock'}
+                            className={`w-full mt-10 font-semibold py-4 px-6 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#B88E2F] shadow-sm text-center ${
+                              product.stockStatus === 'outOfStock'
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-[#B88E2F] hover:bg-[#9E7A28] text-white'
+                            }`}
                           >
-                            Add To Cart
+                            {product.stockStatus === 'outOfStock' ? 'Out of Stock' : 'Add To Cart'}
                           </button>
                         </div>
                       </div>

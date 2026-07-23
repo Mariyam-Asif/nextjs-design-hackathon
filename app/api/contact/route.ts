@@ -40,13 +40,31 @@ export async function POST(request: Request) {
       status: 'new',
     };
 
-    await writeClient.create(doc);
+    try {
+      await writeClient.create(doc);
+    } catch (writeErr: unknown) {
+      const errMessage = writeErr instanceof Error ? writeErr.message : String(writeErr);
+      console.error('Sanity write error in contact API:', errMessage);
+
+      // If token missing or unauthorized, log actionable info
+      if (errMessage.includes('token') || errMessage.includes('Unauthorized') || errMessage.includes('permission')) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: 'Server configuration error: SANITY_API_TOKEN is missing or lacks write permissions in environment variables. Please check your Vercel deployment environment variables.',
+          },
+          { status: 500 }
+        );
+      }
+      throw writeErr;
+    }
 
     return NextResponse.json({ success: true, message: 'Message sent successfully!' });
-  } catch (error) {
-    console.error('Error in contact API route:', error);
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : String(error);
+    console.error('Error in contact API route:', errMessage);
     return NextResponse.json(
-      { success: false, message: 'Internal server error. Please try again later.' },
+      { success: false, message: 'Failed to save message. Please ensure SANITY_API_TOKEN is set in Vercel environment settings.' },
       { status: 500 }
     );
   }

@@ -85,9 +85,13 @@ const currentProducts = await sanityClient.fetch<SanityProduct[]>(
     const currentPrice = currentProduct.price;
     const priceChanged = cartPrice !== currentPrice;
 
+    const currentStatus = currentProduct.stockStatus || (currentProduct.stockQuantity === 0 ? "outOfStock" : "inStock");
+    const rawStockQty = typeof currentProduct.stockQuantity === 'number' ? currentProduct.stockQuantity : Number(currentProduct.stockQuantity);
+    const effectiveStock = (!isNaN(rawStockQty) && rawStockQty > 0) ? rawStockQty : (currentStatus === "outOfStock" ? 0 : 99);
+
     const stockSufficient =
-      currentProduct.stockStatus !== "outOfStock" &&
-      cartItem.quantity <= currentProduct.stockQuantity;
+      currentStatus !== "outOfStock" &&
+      cartItem.quantity <= effectiveStock;
 
     const validation: ProductValidation = {
       id: cartItem.id,
@@ -95,27 +99,27 @@ const currentProducts = await sanityClient.fetch<SanityProduct[]>(
       currentPrice,
       cartPrice,
       priceChanged,
-      currentStock: currentProduct.stockQuantity,
+      currentStock: effectiveStock,
       requestedQuantity: cartItem.quantity,
       stockSufficient,
-      stockStatus: currentProduct.stockStatus,
+      stockStatus: currentStatus,
       currency: currentProduct.currency || 'Rs',
     };
 
     if (priceChanged) {
       priceChanges.push(validation);
       errors.push(
-        `Price changed for "${validation.title}": Rs ${cartPrice} → Rs ${currentPrice}`
+        `Price changed for "${validation.title}": ${validation.currency} ${cartPrice} → ${validation.currency} ${currentPrice}`
       );
     }
 
     if (!stockSufficient) {
       stockIssues.push(validation);
-      if (currentProduct.stockStatus === "outOfStock") {
+      if (currentStatus === "outOfStock") {
         errors.push(`"${validation.title}" is out of stock`);
       } else {
         errors.push(
-          `Insufficient stock for "${validation.title}": ${cartItem.quantity} requested, only ${currentProduct.stockQuantity} available`
+          `Insufficient stock for "${validation.title}": ${cartItem.quantity} requested, only ${effectiveStock} available`
         );
       }
     }

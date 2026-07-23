@@ -60,6 +60,11 @@ export const CartProvider = ({ children }) => {
         if (currentProduct) {
           const newPrice = parsePrice(currentProduct.price);
           const itemOldPrice = parsePrice(item.price);
+          const itemCurrency = currentProduct.currency || item.currency || 'Rs.';
+
+          const status = currentProduct.stockStatus || (currentProduct.stockQuantity === 0 ? 'outOfStock' : 'inStock');
+          const rawQty = typeof currentProduct.stockQuantity === 'number' ? currentProduct.stockQuantity : Number(currentProduct.stockQuantity);
+          const qty = (!isNaN(rawQty) && rawQty >= 0) ? rawQty : (status === 'outOfStock' ? 0 : 99);
 
           // Check if price changed
           if (itemOldPrice !== newPrice) {
@@ -67,14 +72,16 @@ export const CartProvider = ({ children }) => {
               id: item.id,
               title: item.title,
               oldPrice: item.price,
-              newPrice: ` ${newPrice}`,
+              newPrice: `${newPrice}`,
+              currency: itemCurrency,
             });
 
             return {
               ...item,
-              price: `$ ${newPrice}`,
-              stockStatus: currentProduct.stockStatus,
-              stockQuantity: currentProduct.stockQuantity,
+              price: `${newPrice}`,
+              currency: itemCurrency,
+              stockStatus: status,
+              stockQuantity: qty,
               title: currentProduct.title,
             };
           }
@@ -82,8 +89,9 @@ export const CartProvider = ({ children }) => {
           // Update stock status and quantity even if price didn't change
           return {
             ...item,
-            stockStatus: currentProduct.stockStatus,
-            stockQuantity: currentProduct.stockQuantity,
+            currency: itemCurrency,
+            stockStatus: status,
+            stockQuantity: qty,
             title: currentProduct.title,
           };
         }

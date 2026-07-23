@@ -10,11 +10,14 @@ export const client = createClient({
   useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
 })
 
-// Write-enabled client for mutations (creating orders)
+// Write-enabled client for mutations (creating orders, contact submissions)
+const token = process.env.SANITY_API_TOKEN || process.env.SANITY_WRITE_TOKEN || process.env.SANITY_API_WRITE_TOKEN || process.env.NEXT_PUBLIC_SANITY_TOKEN;
+
 export const writeClient = createClient({
   projectId,
   dataset,
   apiVersion,
   useCdn: false,
-  token: process.env.SANITY_API_TOKEN, // Write token from environment
+  token, // Write token from environment
 })
+

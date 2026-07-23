@@ -8,6 +8,7 @@ export interface Product {
   title: string;
   description?: string;
   price: number;
+  stockStatus?: string;
   stockQuantity: number;
   category?: string;
   tags?: string[];
@@ -22,11 +23,11 @@ export interface FilterCriteria {
 }
 
 /**
- * Get stock status based on quantity
+ * Get stock status based on quantity and stockStatus
  */
-export function getStockStatus(stockQuantity: number): 'in-stock' | 'low-stock' | 'out-of-stock' {
-  if (stockQuantity === 0) return 'out-of-stock';
-  if (stockQuantity <= 5) return 'low-stock';
+export function getStockStatus(stockQuantity: number, stockStatus?: string): 'in-stock' | 'low-stock' | 'out-of-stock' {
+  if (stockStatus === 'outOfStock' || stockStatus === 'out-of-stock' || stockQuantity === 0) return 'out-of-stock';
+  if (stockStatus === 'lowStock' || stockStatus === 'low-stock' || (stockQuantity > 0 && stockQuantity <= 5)) return 'low-stock';
   return 'in-stock';
 }
 
@@ -59,10 +60,11 @@ function filterBySearch<T extends Product>(products: T[], query: string): T[] {
  */
 function filterByCategory<T extends Product>(products: T[], category: string): T[] {
   if (!category) return products;
-  const target = category.toLowerCase();
+  const target = category.toLowerCase().trim();
   return products.filter(product => {
-    const pCat = product.category?.toLowerCase() || '';
-    return pCat === target || pCat.includes(target);
+    const pCat = (typeof product.category === 'string' ? product.category : '').toLowerCase().trim();
+    if (!pCat) return false;
+    return pCat === target || pCat.includes(target) || target.includes(pCat);
   });
 }
 
@@ -97,7 +99,7 @@ function filterByAvailability<T extends Product>(products: T[], availability: st
   if (!availability || availability.length === 0) return products;
 
   return products.filter(product => {
-    const status = getStockStatus(product.stockQuantity);
+    const status = getStockStatus(product.stockQuantity, product.stockStatus);
     return availability.includes(status);
   });
 }

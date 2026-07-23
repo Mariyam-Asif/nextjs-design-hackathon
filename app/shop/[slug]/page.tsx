@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 import { useCart } from "@/app/CartContext";
@@ -11,6 +12,7 @@ import ImageGallery from "@/app/components/ImageGallery";
 import QuantitySelector from "@/app/components/QuantitySelector";
 import { announce } from "@/app/utils/announcer";
 import ShareModal from "@/app/components/ShareModal";
+import shareIcon from "@/public/share-icon-black.svg";
 
 interface Product {
   _id: string;
@@ -58,7 +60,11 @@ export default function ProductDetailPage() {
             "images": images[].asset->url,
             stockStatus,
             stockQuantity,
-            "slug": slug.current
+            "slug": select(
+              defined(slug.current) => slug.current,
+              string(slug) => slug,
+              _id
+            )
           }
         `;
         const data = await client.fetch(query, { slug });
@@ -66,7 +72,17 @@ export default function ProductDetailPage() {
         if (!data) {
           setError("Product not found");
         } else {
-          setProduct(data);
+          const status = data.stockStatus || (data.stockQuantity === 0 ? 'outOfStock' : 'inStock');
+          const rawQty = typeof data.stockQuantity === 'number' ? data.stockQuantity : Number(data.stockQuantity);
+          const effectiveStockQuantity = (!isNaN(rawQty) && rawQty > 0) ? rawQty : (status === 'outOfStock' ? 0 : 99);
+          const slugStr = typeof data.slug === 'string' ? data.slug : (data.slug?.current || data._id);
+
+          setProduct({
+            ...data,
+            stockStatus: status,
+            stockQuantity: effectiveStockQuantity,
+            slug: slugStr,
+          });
         }
       } catch (err) {
         console.error("Error fetching product:", err);
@@ -84,8 +100,9 @@ export default function ProductDetailPage() {
       const existing = cartItems.find((i: { id: string; quantity: number }) => i.id === product._id);
       const currentQty = existing ? existing.quantity : 0;
       const targetQty = currentQty + quantity;
+      const availableStock = product.stockQuantity > 0 ? product.stockQuantity : 99;
 
-      if (targetQty <= product.stockQuantity) {
+      if (targetQty <= availableStock) {
         if (existing) {
           updateQuantity(product._id, targetQty);
         } else {
@@ -96,7 +113,7 @@ export default function ProductDetailPage() {
             price: product.price,
             currency: product.currency,
             imageUrl: product.imageUrl,
-            stockQuantity: product.stockQuantity,
+            stockQuantity: availableStock,
             stockStatus: product.stockStatus,
           });
           if (quantity > 1) {
@@ -108,7 +125,7 @@ export default function ProductDetailPage() {
           setSidebarVisible(true);
         }
       } else {
-        announce(`Cannot add more. Only ${product.stockQuantity} items are available in stock.`, "polite");
+        announce(`Cannot add more. Only ${availableStock} items are available in stock.`, "polite");
       }
     }
   };
@@ -255,7 +272,12 @@ export default function ProductDetailPage() {
                   className="py-4 px-6 border-2 border-gray-300 hover:border-[#B88E2F] hover:text-[#B88E2F] text-gray-700 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F]"
                   aria-label={`Share ${product.title}`}
                 >
-                  <span>🔗</span>
+                <Image
+                  src={shareIcon}
+                  alt=""
+                  className="w-5 h-5 transition-transform hover:scale-110"
+                  aria-hidden="true"
+                />
                   <span>Share</span>
                 </button>
               </div>

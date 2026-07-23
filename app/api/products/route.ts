@@ -18,11 +18,25 @@ export async function GET(request: Request) {
         tags,
         stockStatus,
         stockQuantity,
-        "slug": slug.current,
+        "slug": select(
+          defined(slug.current) => slug.current,
+          string(slug) => slug,
+          _id
+        ),
         "isNew": _createdAt > now() - 60*60*24*30
       }`;
 
-    const products = await client.fetch(query);
+    const rawProducts = await client.fetch(query);
+    const products = rawProducts.map((p: Record<string, unknown>) => {
+      const status = (p.stockStatus as string) || (p.stockQuantity === 0 ? 'outOfStock' : 'inStock');
+      const rawQty = typeof p.stockQuantity === 'number' ? p.stockQuantity : Number(p.stockQuantity);
+      const qty = (!isNaN(rawQty) && rawQty >= 0) ? rawQty : (status === 'outOfStock' ? 0 : 10);
+      return {
+        ...p,
+        stockStatus: status,
+        stockQuantity: qty,
+      };
+    });
 
     return NextResponse.json(products);
   } catch (error) {

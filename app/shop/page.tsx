@@ -11,7 +11,8 @@ interface Product {
   discountPercentage?: string;
   imageUrl: string;
   tags?: string[];
-  stockQuantity: number;
+  stockStatus?: string;
+  stockQuantity?: number;
   slug: string;
   category?: string;
   displayOrder?: number;
@@ -37,9 +38,22 @@ async function fetchProducts(): Promise<Product[]> {
       discountPercentage,
       "imageUrl": productImage.asset->url,
       tags,
+      stockStatus,
       stockQuantity,
-      "slug": slug.current,
-      category,
+      "slug": select(
+        defined(slug.current) => slug.current,
+        string(slug) => slug,
+        _id
+      ),
+      "category": select(
+        defined(category->name) => category->name,
+        defined(category->slug.current) => category->slug.current,
+        defined(category->title) => category->title,
+        defined(category.name) => category.name,
+        defined(category.title) => category.title,
+        string(category) => category,
+        ""
+      ),
       displayOrder,
       _createdAt
     }
