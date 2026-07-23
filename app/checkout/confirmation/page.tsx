@@ -72,7 +72,7 @@ function OrderConfirmationContent() {
           additionalInfo
         }`;
 
-        const result = await client.fetch(query, { orderNumber });
+        const result = await client.fetch(query, { orderNumber }, { useCdn: false });
 
         if (!result) {
           setError("Order not found");

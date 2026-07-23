@@ -63,8 +63,19 @@ function filterByCategory<T extends Product>(products: T[], category: string): T
   const target = category.toLowerCase().trim();
   return products.filter(product => {
     const pCat = (typeof product.category === 'string' ? product.category : '').toLowerCase().trim();
-    if (!pCat) return false;
-    return pCat === target || pCat.includes(target) || target.includes(pCat);
+    const title = (product.title || '').toLowerCase().trim();
+    const tags = Array.isArray(product.tags) ? product.tags.map(t => t.toLowerCase()).join(' ') : '';
+    const desc = (product.description || '').toLowerCase();
+
+    if (pCat && (pCat === target || pCat.includes(target) || target.includes(pCat))) {
+      return true;
+    }
+
+    if (title.includes(target) || tags.includes(target) || desc.includes(target)) {
+      return true;
+    }
+
+    return false;
   });
 }
 

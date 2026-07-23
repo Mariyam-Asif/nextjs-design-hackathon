@@ -57,7 +57,7 @@ export async function createOrder(orderData: OrderData) {
     }
 
     // Generate unique order number
-    const orderNumber = await generateUniqueOrderNumber(writeClient);
+    const orderNumber = await generateUniqueOrderNumber(client);
 
     // Fetch current validated prices and currencies for order (use Sanity as source of truth)
     const productIds = cartItems.map((item: CartItem) => item.id);
@@ -122,7 +122,6 @@ export async function createOrder(orderData: OrderData) {
           title: item.title,
           quantity: item.quantity,
           price: `${itemCurrency} ${validatedPrice}`,
-          lineTotal: validatedPrice * item.quantity,
         };
       }),
       subtotal: validatedTotal,
@@ -132,7 +131,23 @@ export async function createOrder(orderData: OrderData) {
     };
 
     // Create order in Sanity
-    await writeClient.create(sanityOrderData);
+    try {
+      await writeClient.create(sanityOrderData);
+    } catch (writeErr: unknown) {
+      const errMessage = writeErr instanceof Error ? writeErr.message : String(writeErr);
+      console.error("Sanity order creation write error:", errMessage);
+
+      if (errMessage.includes("token") || errMessage.includes("Unauthorized") || errMessage.includes("permission") || errMessage.includes("401")) {
+        return {
+          success: false,
+          error: "Server configuration error: SANITY_API_TOKEN is missing or lacks write permissions in Vercel environment variables. Please add a write token in Vercel settings.",
+        };
+      }
+      return {
+        success: false,
+        error: `Failed to create order in database: ${errMessage}`,
+      };
+    }
 
     return {
       success: true,

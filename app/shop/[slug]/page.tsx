@@ -49,7 +49,13 @@ export default function ProductDetailPage() {
       try {
         setLoading(true);
         const query = `
-          *[_type == "product" && (slug.current == $slug || _id == $slug)][0]{
+          *[_type == "product" && (
+            slug.current == $slug ||
+            slug == $slug ||
+            lower(slug.current) == lower($slug) ||
+            lower(string(slug)) == lower($slug) ||
+            _id == $slug
+          )][0]{
             _id,
             title,
             price,
@@ -67,12 +73,13 @@ export default function ProductDetailPage() {
             )
           }
         `;
-        const data = await client.fetch(query, { slug });
+        const data = await client.fetch(query, { slug }, { useCdn: false });
 
         if (!data) {
           setError("Product not found");
         } else {
-          const status = data.stockStatus || (data.stockQuantity === 0 ? 'outOfStock' : 'inStock');
+          const rawStatus = data.stockStatus || (data.stockQuantity === 0 ? 'outOfStock' : 'inStock');
+          const status = (rawStatus === 'outOfStock' || data.stockQuantity === 0) ? 'outOfStock' : (rawStatus === 'lowStock' || (data.stockQuantity > 0 && data.stockQuantity <= 5) ? 'lowStock' : 'inStock');
           const rawQty = typeof data.stockQuantity === 'number' ? data.stockQuantity : Number(data.stockQuantity);
           const effectiveStockQuantity = (!isNaN(rawQty) && rawQty > 0) ? rawQty : (status === 'outOfStock' ? 0 : 99);
           const slugStr = typeof data.slug === 'string' ? data.slug : (data.slug?.current || data._id);

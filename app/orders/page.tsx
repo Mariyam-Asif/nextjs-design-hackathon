@@ -63,7 +63,7 @@ export default function Orders() {
         }
       }`;
 
-      const result = await client.fetch(query, { orderNumbers });
+      const result = await client.fetch(query, { orderNumbers }, { useCdn: false });
       setOrders(result);
     } catch (err) {
       console.error("Failed to fetch orders:", err);
