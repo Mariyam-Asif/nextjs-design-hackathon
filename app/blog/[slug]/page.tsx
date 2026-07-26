@@ -102,28 +102,71 @@ const FALLBACK_POSTS: Record<string, BlogPost> = {
 async function fetchBlogPost(slug: string): Promise<BlogPost | null> {
   try {
     const query = `
-      *[_type == "blogPost" && slug.current == $slug][0] {
+      *[_type == "blogPost" && (
+        slug.current == $slug ||
+        slug == $slug ||
+        lower(slug.current) == lower($slug) ||
+        lower(string(slug)) == lower($slug) ||
+        _id == $slug
+      )][0] {
         _id,
         title,
-        "slug": slug.current,
+        "slug": select(
+          defined(slug.current) => slug.current,
+          string(slug) => slug,
+          _id
+        ),
         excerpt,
         body,
-        "imageUrl": mainImage.asset->url,
+        "imageUrl": select(
+          defined(mainImage.asset->url) => mainImage.asset->url,
+          defined(image.asset->url) => image.asset->url,
+          ""
+        ),
         author,
         publishedAt,
         tags
       }
     `;
-    return await client.fetch(query, { slug });
+    return await client.fetch(query, { slug }, { useCdn: false });
   } catch (error) {
     console.error("Error fetching blog post from Sanity:", error);
     return null;
   }
 }
 
+async function fetchRecentBlogPosts(): Promise<BlogPost[]> {
+  try {
+    const query = `
+      *[_type == "blogPost"] | order(publishedAt desc)[0...5] {
+        _id,
+        title,
+        "slug": select(
+          defined(slug.current) => slug.current,
+          string(slug) => slug,
+          _id
+        ),
+        publishedAt,
+        "imageUrl": select(
+          defined(mainImage.asset->url) => mainImage.asset->url,
+          defined(image.asset->url) => image.asset->url,
+          ""
+        )
+      }
+    `;
+    return await client.fetch(query, {}, { useCdn: false });
+  } catch {
+    return [];
+  }
+}
+
 export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
-  const sanityPost = await fetchBlogPost(slug);
+  const [sanityPost, sanityRecent] = await Promise.all([
+    fetchBlogPost(slug),
+    fetchRecentBlogPosts()
+  ]);
+
   const post = sanityPost || FALLBACK_POSTS[slug];
 
   if (!post) {
@@ -172,7 +215,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     }
   };
 
-  const recentPostsList = [
+  const defaultRecent = [
     { title: "Going all-in with millennial design", date: "03 Aug 2022", img: post0, slug: "going-all-in-with-millennial-design" },
     { title: "Exploring new ways of decorating", date: "03 Aug 2022", img: post1, slug: "exploring-new-ways-of-decorating" },
     { title: "Handmade pieces that took time to make", date: "03 Aug 2022", img: post2, slug: "handmade-pieces-that-took-time-to-make" },
@@ -246,21 +289,41 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
               <h3 className="text-xl font-bold mb-6 text-gray-900 border-b border-gray-200 pb-3">Recent Posts</h3>
               <div className="flex flex-col gap-6">
-                {recentPostsList.map((p, idx) => (
-                  <Link key={idx} href={`/blog/${p.slug}`} className="flex items-center gap-4 group">
-                    <div className="relative w-16 h-16 shrink-0 rounded overflow-hidden">
-                      <Image src={p.img} alt="" fill className="object-cover" />
-                    </div>
-                    <div className="flex flex-col gap-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[#B88E2F] transition-colors truncate">
-                        {p.title}
-                      </h4>
-                      <p className="text-xs text-gray-400">
-                        {p.date}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
+                {sanityRecent.length > 0 ? (
+                  sanityRecent.map((p) => (
+                    <Link key={p._id} href={`/blog/${p.slug}`} className="flex items-center gap-4 group">
+                      <div className="relative w-16 h-16 shrink-0 rounded overflow-hidden bg-gray-100">
+                        {p.imageUrl ? (
+                          <Image src={p.imageUrl} alt={p.title} fill className="object-cover" />
+                        ) : null}
+                      </div>
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[#B88E2F] transition-colors truncate">
+                          {p.title}
+                        </h4>
+                        <p className="text-xs text-gray-400">
+                          {formatDateStr(p.publishedAt)}
+                        </p>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  defaultRecent.map((p, idx) => (
+                    <Link key={idx} href={`/blog/${p.slug}`} className="flex items-center gap-4 group">
+                      <div className="relative w-16 h-16 shrink-0 rounded overflow-hidden">
+                        <Image src={p.img} alt="" fill className="object-cover" />
+                      </div>
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[#B88E2F] transition-colors truncate">
+                          {p.title}
+                        </h4>
+                        <p className="text-xs text-gray-400">
+                          {p.date}
+                        </p>
+                      </div>
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
           </aside>

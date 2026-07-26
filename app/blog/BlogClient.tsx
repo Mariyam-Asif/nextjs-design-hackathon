@@ -265,21 +265,43 @@ export default function BlogClient({ initialPosts }: BlogClientProps) {
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
             <h3 className="text-xl font-bold mb-6 text-gray-900 border-b border-gray-200 pb-3">Recent Posts</h3>
             <div className="flex flex-col gap-6">
-              {recentPostsList.map((post, idx) => (
-                <Link key={idx} href={`/blog/${post.slug}`} className="flex items-center gap-4 group">
-                  <div className="relative w-16 h-16 shrink-0 rounded overflow-hidden">
-                    <Image src={post.img} alt="" fill className="object-cover" />
-                  </div>
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[#B88E2F] transition-colors truncate">
-                      {post.title}
-                    </h4>
-                    <p className="text-xs text-gray-400">
-                      {post.date}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              {initialPosts.length > 0 ? (
+                initialPosts.slice(0, 5).map((post) => (
+                  <Link key={post._id} href={`/blog/${post.slug}`} className="flex items-center gap-4 group">
+                    <div className="relative w-16 h-16 shrink-0 rounded overflow-hidden bg-gray-100">
+                      {post.imageUrl ? (
+                        <Image src={post.imageUrl} alt={post.title} fill className="object-cover" />
+                      ) : post.localImage ? (
+                        <Image src={post.localImage} alt={post.title} fill className="object-cover" />
+                      ) : null}
+                    </div>
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[#B88E2F] transition-colors truncate">
+                        {post.title}
+                      </h4>
+                      <p className="text-xs text-gray-400">
+                        {formatDateStr(post.publishedAt)}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                recentPostsList.map((post, idx) => (
+                  <Link key={idx} href={`/blog/${post.slug}`} className="flex items-center gap-4 group">
+                    <div className="relative w-16 h-16 shrink-0 rounded overflow-hidden">
+                      <Image src={post.img} alt="" fill className="object-cover" />
+                    </div>
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[#B88E2F] transition-colors truncate">
+                        {post.title}
+                      </h4>
+                      <p className="text-xs text-gray-400">
+                        {post.date}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </div>

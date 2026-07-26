@@ -19,16 +19,24 @@ async function fetchBlogPosts(): Promise<BlogPost[]> {
     *[_type == "blogPost"] | order(publishedAt desc) {
       _id,
       title,
-      "slug": slug.current,
+      "slug": select(
+        defined(slug.current) => slug.current,
+        string(slug) => slug,
+        _id
+      ),
       excerpt,
       body,
-      "imageUrl": mainImage.asset->url,
+      "imageUrl": select(
+        defined(mainImage.asset->url) => mainImage.asset->url,
+        defined(image.asset->url) => image.asset->url,
+        ""
+      ),
       author,
       publishedAt,
       tags
     }
   `;
-  return client.fetch(query);
+  return client.fetch(query, {}, { useCdn: false });
 }
 
 export default async function BlogPage() {
