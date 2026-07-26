@@ -29,7 +29,7 @@ export default function Categories() {
             href={`/shop?category=${encodeURIComponent(cat.name)}`}
             className="group flex flex-col items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-4 rounded-2xl"
           >
-            <div className="relative w-full h-[320px] sm:h-[380px] lg:h-[480px] overflow-hidden rounded-2xl bg-gray-100 shadow-md group-hover:shadow-xl transition-all duration-500">
+            <div className="relative w-full h-[260px] sm:h-[380px] lg:h-[480px] overflow-hidden rounded-2xl bg-gray-100 shadow-md group-hover:shadow-xl transition-all duration-500">
               <Image
                 src={cat.image}
                 alt={`${cat.name} furniture collection`}

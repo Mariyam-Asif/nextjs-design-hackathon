@@ -78,8 +78,8 @@ export default function Products() {
 
   return (
     <div>
-      <section className="px-[8%] mb-8">
-        <h2 className="font-bold text-4xl text-center text-[#3A3A3A] mb-8">
+      <section className="px-4 sm:px-8 lg:px-16 max-w-[1440px] mx-auto mb-12 sm:mb-16">
+        <h2 className="font-bold text-2xl sm:text-3xl lg:text-4xl text-center text-[#3A3A3A] mb-6 sm:mb-8">
           Our Products
         </h2>
 
@@ -115,7 +115,7 @@ export default function Products() {
               </h3>
               <button
                 onClick={fetchProducts}
-                className="mt-4 bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors"
+                className="mt-4 bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors min-h-[44px]"
               >
                 Try Again
               </button>
@@ -172,9 +172,9 @@ export default function Products() {
 
         {/* Show More Button */}
         {!loading && !error && products.length > 0 && (
-          <div className="flex justify-center items-center mt-8">
+          <div className="flex justify-center items-center mt-8 sm:mt-10">
             <Link href="/shop">
-              <button className="bg-white text-[#B88E2F] text-base font-semibold border-[#B88E2F] border py-3 pr-[74px] pl-[82px] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:bg-[#B88E2F] hover:text-white">
+              <button className="bg-white text-[#B88E2F] text-sm sm:text-base font-semibold border-[#B88E2F] border py-3 px-8 sm:px-14 rounded-xs transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:bg-[#B88E2F] hover:text-white min-h-[44px]">
                 Show More
               </button>
             </Link>
