@@ -112,8 +112,8 @@ const handleAddToCart = (item:{
   };
 
   return (
-    <div className="min-h-screen px-6 py-8">
-      <h1 className="font-bold text-2xl text-[#333333] mb-6">
+    <div className="min-h-screen px-4 sm:px-8 lg:px-16 max-w-[1440px] mx-auto py-8">
+      <h1 className="font-bold text-xl sm:text-2xl text-[#333333] mb-6">
         Search Results for &quot;{query}&quot;
       </h1>
 
@@ -138,7 +138,7 @@ const handleAddToCart = (item:{
             <h2 className="text-xl font-semibold text-red-800 mb-2">{error}</h2>
             <button
               onClick={retrySearch}
-              className="mt-4 bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+              className="mt-4 bg-[#B88E2F] text-white px-6 py-2.5 rounded-lg hover:bg-[#9a7526] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 min-h-[44px]"
             >
               Try Again
             </button>
@@ -179,7 +179,7 @@ const handleAddToCart = (item:{
           </p>
           <Link
             href="/shop"
-            className="inline-block bg-[#B88E2F] text-white px-6 py-2 rounded-lg hover:bg-[#9a7526] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+            className="inline-flex items-center justify-center bg-[#B88E2F] text-white px-6 py-3 rounded-lg hover:bg-[#9a7526] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 min-h-[44px]"
           >
             Browse All Products
           </Link>
@@ -188,7 +188,7 @@ const handleAddToCart = (item:{
 
       {/* Products Grid */}
       {!loading && !error && products.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
           {products.map((product) => (
             <ProductCard
               key={product._id}

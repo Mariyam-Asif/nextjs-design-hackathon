@@ -134,36 +134,38 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
           <main className="flex-grow w-full lg:w-3/4">
             <PromotionalBanner placement="shop" />
             {/* Controls Bar */}
-            <div className="flex flex-row justify-between items-center mb-8 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
-              {/* Mobile Filter Toggle Button */}
-              <button
-                onClick={() => setIsMobileFilterOpen(true)}
-                className="lg:hidden flex items-center gap-2 bg-[#B88E2F] hover:bg-[#9E7A28] text-white font-medium py-2.5 px-5 rounded-lg text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2"
-                aria-label="Open filter panel"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 sm:mb-8 gap-3 sm:gap-4 bg-gray-50 p-3.5 sm:p-4 rounded-xl border border-gray-100">
+              <div className="flex items-center justify-between sm:justify-start gap-4">
+                {/* Mobile Filter Toggle Button */}
+                <button
+                  onClick={() => setIsMobileFilterOpen(true)}
+                  className="lg:hidden flex items-center justify-center gap-2 bg-[#B88E2F] hover:bg-[#9E7A28] text-white font-medium py-2.5 px-5 rounded-lg text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] focus-visible:ring-offset-2 min-h-[44px]"
+                  aria-label="Open filter panel"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                  />
-                </svg>
-                <span>Filter</span>
-              </button>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                    />
+                  </svg>
+                  <span>Filter</span>
+                </button>
 
-              {/* Showing stats / breadcrumbs style text */}
-              <div className="text-sm font-medium text-gray-500 hidden sm:block">
-                Showing {filtered.length === 0 ? '0' : `${paginationResult.startIndex + 1}–${paginationResult.endIndex}`} of {filtered.length} products
+                {/* Showing stats / breadcrumbs style text */}
+                <div className="text-xs sm:text-sm font-medium text-gray-500">
+                  Showing {filtered.length === 0 ? '0' : `${paginationResult.startIndex + 1}–${paginationResult.endIndex}`} of {filtered.length} products
+                </div>
               </div>
 
               {/* Sort Component */}
-              <div className="ml-auto">
+              <div className="sm:ml-auto w-full sm:w-auto">
                 <ProductSort value={filters.sort} onChange={updateState} />
               </div>
             </div>
@@ -173,25 +175,25 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
               <div className="flex flex-wrap gap-2 mb-6 items-center">
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mr-2">Active filters:</span>
                 {filters.q && (
-                  <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full border border-gray-200">
+                  <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200">
                     Search: &quot;{filters.q}&quot;
                     <button onClick={() => updateState({ q: '' })} className="hover:text-red-500 font-bold focus:outline-none">&times;</button>
                   </span>
                 )}
                 {filters.category && (
-                  <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full border border-gray-200">
+                  <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200">
                     Category: {categories.find(c => c.slug.current === filters.category)?.name || filters.category}
                     <button onClick={() => updateState({ category: '' })} className="hover:text-red-500 font-bold focus:outline-none">&times;</button>
                   </span>
                 )}
                 {(filters.minPrice || filters.maxPrice) && (
-                  <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full border border-gray-200">
+                  <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200">
                     Price: {filters.minPrice || priceRange.min} - {filters.maxPrice || priceRange.max}
                     <button onClick={() => updateState({ minPrice: '', maxPrice: '' })} className="hover:text-red-500 font-bold focus:outline-none">&times;</button>
                   </span>
                 )}
                 {filters.availability && filters.availability.map(status => (
-                  <span key={status} className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full border border-gray-200">
+                  <span key={status} className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200">
                     Status: {status === 'in-stock' ? 'In Stock' : status === 'low-stock' ? 'Low Stock' : 'Out of Stock'}
                     <button onClick={() => {
                       const updated = filters.availability.filter(s => s !== status);
@@ -201,7 +203,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                 ))}
                 <button
                   onClick={resetFilters}
-                  className="text-xs text-[#B88E2F] hover:text-[#9E7A28] font-semibold underline ml-2 cursor-pointer focus:outline-none"
+                  className="text-xs text-[#B88E2F] hover:text-[#9E7A28] font-semibold underline ml-2 cursor-pointer focus:outline-none py-1"
                 >
                   Clear All
                 </button>
@@ -210,7 +212,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
 
             {/* Products Grid */}
             {paginationResult.products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-y-12 gap-x-6 sm:gap-x-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-y-8 sm:gap-y-12 gap-x-4 sm:gap-x-8">
                 {paginationResult.products.map(product => {
                   const discountStr = product.discountPercentage ? String(product.discountPercentage) : '';
                   const formattedDiscount = discountStr
@@ -249,7 +251,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
               </div>
             ) : (
               /* Empty state */
-              <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-300 max-w-2xl mx-auto px-4 mt-8">
+              <div className="text-center py-16 sm:py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-300 max-w-2xl mx-auto px-4 mt-8">
                 <svg
                   className="w-16 h-16 text-gray-400 mx-auto mb-4"
                   fill="none"
@@ -264,12 +266,12 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                   />
                 </svg>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                <p className="text-gray-600 mb-6 max-w-md mx-auto text-sm sm:text-base">
                   No products match your filters. Try adjusting your criteria.
                 </p>
                 <button
                   onClick={resetFilters}
-                  className="bg-[#B88E2F] hover:bg-[#9E7A28] text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B88E2F]"
+                  className="bg-[#B88E2F] hover:bg-[#9E7A28] text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B88E2F] min-h-[44px]"
                 >
                   Reset All Filters
                 </button>
@@ -277,7 +279,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
             )}
 
             {/* Pagination controls */}
-            <div className="mt-12 flex justify-center">
+            <div className="mt-8 sm:mt-12 flex justify-center">
               <Pagination result={paginationResult} onChange={updateState} />
             </div>
           </main>
@@ -295,7 +297,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
           />
 
           {/* Drawer panel */}
-          <div className="relative bg-white w-full max-w-[320px] h-full p-6 overflow-y-auto shadow-2xl flex flex-col justify-between">
+          <div className="relative bg-white w-4/5 max-w-xs sm:max-w-sm h-full p-5 sm:p-6 overflow-y-auto shadow-2xl flex flex-col justify-between z-10 animate-slide-left">
             <div>
               {/* Drawer header */}
               <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
@@ -307,7 +309,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                 </h2>
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 focus:outline-none"
+                  className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-700 focus:outline-none min-w-[40px] min-h-[40px] flex items-center justify-center"
                   aria-label="Close filters"
                 >
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -330,7 +332,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
             <div className="pt-6 border-t border-gray-100 mt-8">
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="w-full bg-[#B88E2F] hover:bg-[#9E7A28] text-white font-medium py-3 rounded-lg text-center transition-colors focus:outline-none"
+                className="w-full bg-[#B88E2F] hover:bg-[#9E7A28] text-white font-medium py-3 rounded-lg text-center transition-colors focus:outline-none min-h-[44px]"
               >
                 Apply Filters ({filtered.length})
               </button>
