@@ -255,13 +255,13 @@ export default function Navbar() {
         )}
 
         {/* Clean Action Icons Bar */}
-        <div className="flex items-center gap-5 sm:gap-7">
+        <div className="flex items-center gap-2.5 xs:gap-3.5 sm:gap-6">
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
               aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={isMenuOpen}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded p-1.5 hover:bg-gray-100 transition-colors"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded p-2 hover:bg-gray-100 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
             >
               <Image
                 src={hamburger}
@@ -277,7 +277,7 @@ export default function Navbar() {
             onClick={toggleSearch}
             aria-label="Search products"
             aria-expanded={isSearchVisible}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F]"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] min-w-[40px] min-h-[40px] flex items-center justify-center"
           >
             <Image
               src={search}
@@ -293,7 +293,7 @@ export default function Navbar() {
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
               aria-label="User account menu"
               aria-expanded={isProfileMenuOpen}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F]"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] min-w-[40px] min-h-[40px] flex items-center justify-center"
             >
               <Image
                 src={profile}
@@ -394,7 +394,7 @@ export default function Navbar() {
           <Link
             href="/cart"
             aria-label={`Shopping cart, ${cartItemCount} ${cartItemCount === 1 ? 'item' : 'items'}`}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F]"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] min-w-[40px] min-h-[40px] flex items-center justify-center"
           >
             <Image
               src={cartIcon}
@@ -421,10 +421,10 @@ export default function Navbar() {
               onClick={closeSearch}
               aria-hidden="true"
             />
-            <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 p-4 w-11/12 sm:w-1/2 max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 animate-slide-down">
+            <div className="fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-50 p-3 sm:p-4 w-11/12 max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 animate-slide-down">
               <Form
                 action={`/search`}
-                className="w-full flex items-center gap-3"
+                className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3"
               >
                 <label htmlFor="search-input" className="sr-only">
                   Search for products
@@ -436,12 +436,12 @@ export default function Navbar() {
                   placeholder="Search products by title, category, tags..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-gray-50 text-gray-800 px-5 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B88E2F] w-full text-sm font-medium border border-gray-200"
+                  className="bg-gray-50 text-gray-800 px-4 sm:px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B88E2F] w-full text-sm font-medium border border-gray-200"
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="bg-[#B88E2F] text-white px-6 py-3.5 rounded-xl font-bold text-sm hover:bg-[#a87726] transition-colors shrink-0"
+                  className="bg-[#B88E2F] text-white px-5 sm:px-6 py-3 rounded-xl font-bold text-sm hover:bg-[#a87726] transition-colors shrink-0"
                 >
                   Search
                 </button>
