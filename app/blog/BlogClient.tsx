@@ -150,13 +150,13 @@ export default function BlogClient({ initialPosts }: BlogClientProps) {
     <>
       <Banner pageName="Blog" showLogo={false} />
       
-      <div className="flex flex-col md:flex-row gap-8 justify-center px-6 md:px-0 max-w-[1440px] mx-auto py-12">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center px-4 sm:px-8 lg:px-16 max-w-[1440px] mx-auto py-8 sm:py-12">
         {/* Blogs Column */}
-        <div className="w-full md:w-[65%] flex flex-col gap-12">
+        <div className="w-full lg:w-2/3 flex flex-col gap-8 sm:gap-12">
           {paginatedPosts.length > 0 ? (
             paginatedPosts.map(post => (
-              <div key={post._id} className="flex flex-col border-b border-gray-100 pb-12">
-                <Link href={`/blog/${post.slug}`} className="relative w-full h-[300px] md:h-[450px] overflow-hidden rounded-[10px] block mb-6">
+              <div key={post._id} className="flex flex-col border-b border-gray-100 pb-8 sm:pb-12">
+                <Link href={`/blog/${post.slug}`} className="relative w-full h-[240px] sm:h-[360px] md:h-[450px] overflow-hidden rounded-[10px] block mb-5 sm:mb-6 bg-gray-100">
                   {post.imageUrl ? (
                     <Image
                       src={post.imageUrl}
@@ -175,7 +175,7 @@ export default function BlogClient({ initialPosts }: BlogClientProps) {
                 </Link>
 
                 {/* Blog Info */}
-                <div className="flex items-center gap-6 font-normal text-sm md:text-base text-[#9F9F9F] mb-4">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 font-normal text-xs sm:text-sm md:text-base text-[#9F9F9F] mb-3 sm:mb-4">
                   <div className="flex justify-center items-center gap-2">
                     <Image src={admin} alt="" className="w-4 h-4" />
                     <span>{post.author}</span>
@@ -191,34 +191,34 @@ export default function BlogClient({ initialPosts }: BlogClientProps) {
                 </div>
 
                 <Link href={`/blog/${post.slug}`}>
-                  <h3 className="font-semibold text-2xl md:text-3xl text-gray-900 pb-3 hover:text-[#B88E2F] transition-colors">
+                  <h3 className="font-bold text-xl sm:text-2xl md:text-3xl text-gray-900 pb-3 hover:text-[#B88E2F] transition-colors leading-tight">
                     {post.title}
                   </h3>
                 </Link>
-                <p className="text-sm md:text-base text-[#9F9F9F] font-normal leading-relaxed pb-6">
+                <p className="text-sm md:text-base text-[#9F9F9F] font-normal leading-relaxed pb-5 sm:pb-6">
                   {post.excerpt}
                 </p>
 
                 <div className="inline-block">
                   <Link href={`/blog/${post.slug}`} className="group inline-block focus:outline-none">
-                    <span className="text-base font-medium text-gray-900 group-hover:text-[#B88E2F] transition-colors">
+                    <span className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-[#B88E2F] transition-colors">
                       Read more
                     </span>
-                    <span className="block mt-2 w-full h-[1px] bg-gray-900 group-hover:bg-[#B88E2F] transition-colors"></span>
+                    <span className="block mt-1 w-full h-[1.5px] bg-gray-900 group-hover:bg-[#B88E2F] transition-colors"></span>
                   </Link>
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+            <div className="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No posts found</h3>
-              <p className="text-gray-600">Try adjusting your search query or filter tags.</p>
+              <p className="text-gray-600 text-sm">Try adjusting your search query or filter tags.</p>
             </div>
           )}
         </div>
 
         {/* Sidebar Column */}
-        <div className="w-full md:w-[30%] flex flex-col gap-10">
+        <div className="w-full lg:w-1/3 flex flex-col gap-8">
           {/* Search bar */}
           <div className="relative w-full">
             <input

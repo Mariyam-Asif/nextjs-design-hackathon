@@ -120,22 +120,22 @@ export default function Contact() {
   return (
     <div>
       <Banner pageName="Contact" showLogo={false} />
-      <div className="flex flex-col items-center justify-center mt-24">
-        <h2 className="font-semibold text-[36px]">Get In Touch With Us</h2>
-        <p className="font-normal text-sm md:text-base text-[#9F9F9F] text-center max-w-[650px] px-4">
+      <div className="flex flex-col items-center justify-center mt-12 sm:mt-16 mb-8 px-4 text-center">
+        <h2 className="font-bold text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-3">Get In Touch With Us</h2>
+        <p className="font-normal text-xs sm:text-sm md:text-base text-[#9F9F9F] max-w-[650px] leading-relaxed">
           For More Information About Our Product & Services. Please Feel Free To Drop Us
           An Email. Our Staff Always Be There To Help You Out. Do Not Hesitate!
         </p>
       </div>
       
-      <div className="flex flex-col md:flex-row justify-between max-w-[1200px] mx-auto px-4 py-12 gap-12">
+      <div className="flex flex-col lg:flex-row justify-between max-w-[1200px] mx-auto px-4 sm:px-8 py-8 sm:py-12 gap-8 sm:gap-12">
         {/* Info Column */}
-        <div className="flex flex-col md:items-start items-center gap-10 md:w-1/3">
-          <div className="flex items-start gap-6">
-            <Image src={address} alt="" className="mt-1" />
+        <div className="flex flex-col items-start gap-8 lg:w-1/3">
+          <div className="flex items-start gap-4 sm:gap-6">
+            <Image src={address} alt="" className="mt-1 shrink-0 w-6 h-6 sm:w-7 sm:h-7" />
             <div className="flex flex-col">
-              <h3 className="font-bold text-2xl text-gray-900">Address</h3>
-              <p className="font-normal text-base text-gray-600">
+              <h3 className="font-bold text-lg sm:text-xl text-gray-900">Address</h3>
+              <p className="font-normal text-xs sm:text-sm text-gray-600 leading-relaxed mt-1">
                 236 5th SE Avenue, New York NY10000, United States
               </p>
             </div>

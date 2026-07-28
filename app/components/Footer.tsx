@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import line from "@/public/Line.png";
 import Link from "next/link";
-import line2 from "@/public/Line-2.png";
 import { announce } from "../utils/announcer";
 
 export default function Footer() {
@@ -136,7 +135,7 @@ export default function Footer() {
               </div>
             )}
 
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-row justify-center items-center gap-[38px]">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-6">
               <div className="relative">
                 <label htmlFor="newsletter-email" className="sr-only">
                   Email address
@@ -147,22 +146,15 @@ export default function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter Your Email Address"
-                  className="w-full text-sm leading-5 text-[#3A3A3A] font-normal placeholder-gray-400 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded bg-transparent"
+                  className="w-full text-sm leading-5 text-[#3A3A3A] font-normal placeholder-gray-400 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded bg-transparent py-1 border-b border-gray-300 focus:border-[#B88E2F]"
                   required
                 />
-                <span className="absolute bottom-0 mt-[3px] left-0 w-[115%] h-[1px] bg-black" aria-hidden="true"></span>
               </div>
               <button
                 type="submit"
-                className="hover:scale-105 transition-transform duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded cursor-pointer"
+                className="text-sm font-semibold border-b border-black hover:text-[#B88E2F] hover:border-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded py-1 shrink-0"
               >
-                <span className="text-sm text-black font-medium tracking-wider">SUBSCRIBE</span>
-                <Image
-                  src={line2}
-                  alt=""
-                  className="w-[75px] h-[1px] mt-[3px]"
-                  aria-hidden="true"
-                />
+                SUBSCRIBE
               </button>
             </form>
           </div>
