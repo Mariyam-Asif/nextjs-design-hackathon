@@ -186,8 +186,8 @@ export default function ProductDetailPage() {
     <div className="min-h-screen bg-white">
       <Banner pageName={product.title} breadcrumbdName="Product Details" showLogo={false} />
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 py-6 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
           {/* Product Image Gallery */}
           <div className="w-full relative">
             <ImageGallery 
@@ -195,26 +195,26 @@ export default function ProductDetailPage() {
               title={product.title} 
             />
             {product.discountPercentage && (
-              <div className="absolute top-6 right-6 bg-[#E97171] text-white rounded-full w-16 h-16 flex items-center justify-center text-base font-semibold z-10 pointer-events-none shadow-md">
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 bg-[#E97171] text-white rounded-full w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-sm sm:text-base font-semibold z-10 pointer-events-none shadow-md">
                 {product.discountPercentage}
               </div>
             )}
           </div>
 
           {/* Product Info */}
-          <div className="flex flex-col space-y-6">
+          <div className="flex flex-col space-y-5 sm:space-y-6">
             <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#3A3A3A] leading-tight mb-2">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-[#3A3A3A] leading-tight mb-2">
                 {product.title}
               </h1>
               
-              <div className="flex items-center gap-4 text-base font-medium">
-                <span className="text-3xl font-bold text-[#B88E2F]">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-base font-medium">
+                <span className="text-2xl sm:text-3xl font-bold text-[#B88E2F]">
                   {product.currency || 'Rs.'} {product.price}
                 </span>
 
-                <div className="flex items-center gap-1.5 pl-4 border-l border-gray-200">
-                  <div className="flex text-amber-400">
+                <div className="flex items-center gap-1.5 pl-3 sm:pl-4 border-l border-gray-200">
+                  <div className="flex text-amber-400 text-sm sm:text-base">
                     {'★'.repeat(5)}
                   </div>
                   <span className="text-xs font-semibold text-gray-500">(5 Customer Reviews)</span>
@@ -242,15 +242,15 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Description */}
-            <div className="border-t border-b border-gray-100 py-6 space-y-2">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-900">Overview</h2>
-              <p className="text-gray-600 text-base leading-relaxed">
+            <div className="border-t border-b border-gray-100 py-5 sm:py-6 space-y-2">
+              <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-900">Overview</h2>
+              <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
                 {product.description || "Elevate your interior living experience with this master-crafted furniture item. Designed for comfort, durability, and timeless aesthetic appeal."}
               </p>
             </div>
 
             {/* Quantity Selector & Actions */}
-            <div className="space-y-6 pt-2">
+            <div className="space-y-5 sm:space-y-6 pt-2">
               <QuantitySelector
                 quantity={quantity}
                 stockQuantity={product.stockQuantity}
@@ -258,12 +258,12 @@ export default function ProductDetailPage() {
                 onChange={setQuantity}
               />
 
-              <div className="flex flex-wrap gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
                 <button
                   onClick={handleAddToCart}
                   disabled={isOutOfStock}
                   className={`
-                    flex-1 min-w-[200px] py-4 px-8 text-base font-bold rounded-xl shadow-md transition-all duration-300
+                    w-full sm:flex-1 py-3.5 sm:py-4 px-6 sm:px-8 text-sm sm:text-base font-bold rounded-xl shadow-md transition-all duration-300 min-h-[48px]
                     ${
                       isOutOfStock
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -276,7 +276,7 @@ export default function ProductDetailPage() {
 
                 <button
                   onClick={() => setIsShareOpen(true)}
-                  className="py-4 px-6 border-2 border-gray-300 hover:border-[#B88E2F] hover:text-[#B88E2F] text-gray-700 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F]"
+                  className="w-full sm:w-auto py-3.5 sm:py-4 px-6 border-2 border-gray-300 hover:border-[#B88E2F] hover:text-[#B88E2F] text-gray-700 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] min-h-[48px]"
                   aria-label={`Share ${product.title}`}
                 >
                 <Image

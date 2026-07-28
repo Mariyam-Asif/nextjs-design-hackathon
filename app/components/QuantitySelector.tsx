@@ -65,7 +65,7 @@ export default function QuantitySelector({
           onClick={handleDecrease}
           disabled={disabled || quantity <= 1}
           aria-label="Decrease quantity"
-          className={`w-12 h-full flex items-center justify-center font-medium text-lg focus:outline-none transition-colors ${
+          className={`w-12 h-full min-w-[44px] flex items-center justify-center font-medium text-lg focus:outline-none transition-colors ${
             disabled || quantity <= 1
               ? 'text-gray-300 cursor-not-allowed bg-gray-50'
               : 'text-gray-600 hover:bg-gray-100 hover:text-black'
@@ -93,7 +93,7 @@ export default function QuantitySelector({
           onClick={handleIncrease}
           disabled={disabled || quantity >= maxLimit}
           aria-label="Increase quantity"
-          className={`w-12 h-full flex items-center justify-center font-medium text-lg focus:outline-none transition-colors ${
+          className={`w-12 h-full min-w-[44px] flex items-center justify-center font-medium text-lg focus:outline-none transition-colors ${
             disabled || quantity >= maxLimit
               ? 'text-gray-300 cursor-not-allowed bg-gray-50'
               : 'text-gray-600 hover:bg-gray-100 hover:text-black'

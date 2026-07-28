@@ -59,7 +59,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
         <div
           role="tablist"
           aria-label="Product thumbnails"
-          className="flex flex-row gap-3 overflow-x-auto py-2"
+          className="flex flex-row gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-2"
         >
           {images.map((image, index) => {
             const isActive = index === activeIndex;
@@ -71,7 +71,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
                 aria-controls={`gallery-panel-${index}`}
                 id={`gallery-tab-${index}`}
                 onClick={() => setActiveIndex(index)}
-                className={`relative w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-lg overflow-hidden border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] ${
+                className={`relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 shrink-0 rounded-lg overflow-hidden border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] ${
                   isActive
                     ? 'border-[#B88E2F] scale-102 ring-1 ring-[#B88E2F]'
                     : 'border-gray-200 hover:border-gray-400 hover:scale-102'
