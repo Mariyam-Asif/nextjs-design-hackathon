@@ -266,16 +266,16 @@ export default function Checkout() {
       )}
 
       {/* Main Div */}
-      <div className="py-16 flex flex-col lg:flex-row justify-center px-6 lg:px-24 gap-6">
+      <div className="py-8 sm:py-16 flex flex-col lg:flex-row justify-center px-4 sm:px-8 lg:px-16 max-w-[1440px] mx-auto gap-8 lg:gap-16">
         {/* Billing Details */}
-        <div className="w-full lg:w-[45%] pt-9 flex flex-col justify-center items-start px-0 lg:px-20 gap-9">
-          <h2 className="font-semibold text-4xl">Billing details</h2>
-          <form onSubmit={handlePlaceOrder} className="w-full flex flex-col gap-9">
-            <div className="flex gap-8">
+        <div className="w-full lg:w-1/2 pt-4 sm:pt-9 flex flex-col justify-center items-start px-0 gap-6 sm:gap-9">
+          <h2 className="font-bold text-2xl sm:text-3xl lg:text-4xl text-gray-900">Billing details</h2>
+          <form onSubmit={handlePlaceOrder} className="w-full flex flex-col gap-6 sm:gap-8">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
               <div className="flex-1">
                 <label
                   htmlFor="firstName"
-                  className="block font-medium text-base"
+                  className="block font-semibold text-sm text-gray-800"
                 >
                   First Name
                 </label>
@@ -286,11 +286,11 @@ export default function Checkout() {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   required
-                  className="mt-5 w-full border border-[#9F9F9F] rounded-[10px] px-7 py-6 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#B88E2F] hover:border-[#B88E2F]"
+                  className="mt-2 w-full border border-gray-300 rounded-xl px-4 py-3 sm:py-3.5 text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#B88E2F] hover:border-[#B88E2F]"
                 />
               </div>
               <div className="flex-1">
-                <label htmlFor="lastName" className="block font-medium">
+                <label htmlFor="lastName" className="block font-semibold text-sm text-gray-800">
                   Last Name
                 </label>
                 <input
@@ -300,7 +300,7 @@ export default function Checkout() {
                   value={formData.lastName}
                   onChange={handleInputChange}
                   required
-                  className="mt-5 w-full border border-[#9F9F9F] rounded-[10px] px-7 py-6 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#B88E2F] hover:border-[#B88E2F]"
+                  className="mt-2 w-full border border-gray-300 rounded-xl px-4 py-3 sm:py-3.5 text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#B88E2F] hover:border-[#B88E2F]"
                 />
               </div>
             </div>
