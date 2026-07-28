@@ -7,14 +7,13 @@ import heart from "@/public/heart-icon.png";
 import profile from "@/public/profile-icon.svg";
 import search from "@/public/search-icon.png";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import hamburger from "@/public/hamburger-icon.png";
-import Form from "next/form";
 import { useCart } from "../CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useComparison } from "../contexts/ComparisonContext";
 import compareIcon from "@/public/compare-icon-black.svg";
-import orderIcon from "@/public/order-icon.svg"
+import orderIcon from "@/public/order-icon.svg";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,32 +21,65 @@ export default function Navbar() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
-  const { cartItems } = useCart() as { cartItems: Array<{ quantity?: number }> };
-  const { wishlist } = useWishlist();
-  const { comparison } = useComparison();
+  const router = useRouter();
+
+  // Safe Context Access to prevent Vercel SSR/hydration errors
+  let cartItems: Array<{ quantity?: number }> = [];
+  let wishlist: string[] = [];
+  let comparison: string[] = [];
+
+  try {
+    const cartRes = useCart() as { cartItems?: Array<{ quantity?: number }> };
+    if (cartRes && Array.isArray(cartRes.cartItems)) {
+      cartItems = cartRes.cartItems;
+    }
+  } catch {
+    cartItems = [];
+  }
+
+  try {
+    const wishlistRes = useWishlist();
+    if (wishlistRes && Array.isArray(wishlistRes.wishlist)) {
+      wishlist = wishlistRes.wishlist;
+    }
+  } catch {
+    wishlist = [];
+  }
+
+  try {
+    const comparisonRes = useComparison();
+    if (comparisonRes && Array.isArray(comparisonRes.comparison)) {
+      comparison = comparisonRes.comparison;
+    }
+  } catch {
+    comparison = [];
+  }
 
   // Helper to determine if path is active
   const isActive = (path: string) => {
-    if (!pathname) return false;
-    if (path === '/') {
-      return pathname === '/';
+    if (!pathname || typeof pathname !== "string" || !path) return false;
+    if (path === "/") {
+      return pathname === "/";
     }
     return pathname.startsWith(path);
   };
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
+    if (typeof document === "undefined" || !document.body) return;
     if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = '';
+      if (typeof document !== "undefined" && document.body) {
+        document.body.style.overflow = "";
+      }
     };
   }, [isMenuOpen]);
 
-  // Close profile dropdown on route change or outside click
+  // Close profile dropdown and mobile menu on route change
   useEffect(() => {
     setIsProfileMenuOpen(false);
     setIsMenuOpen(false);
@@ -55,54 +87,68 @@ export default function Navbar() {
 
   // Focus trap for mobile menu
   useEffect(() => {
-    if (!isMenuOpen) return;
+    if (!isMenuOpen || typeof document === "undefined") return;
 
-    const modal = document.getElementById('mobile-menu-drawer');
-    if (!modal) return;
+    const timer = setTimeout(() => {
+      const modal = document.getElementById("mobile-menu-drawer");
+      if (!modal) return;
 
-    const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([-1])'
-    );
-    if (focusableElements.length === 0) return;
+      const focusableElements = modal.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([-1])'
+      );
+      if (focusableElements.length === 0) return;
 
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
 
-    const handleTab = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      const handleTab = (e: KeyboardEvent) => {
+        if (e.key !== "Tab") return;
 
-      if (e.shiftKey) {
-        if (document.activeElement === firstElement) {
-          lastElement.focus();
-          e.preventDefault();
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
         }
-      } else {
-        if (document.activeElement === lastElement) {
-          firstElement.focus();
-          e.preventDefault();
-        }
-      }
-    };
+      };
 
-    document.addEventListener('keydown', handleTab);
-    return () => {
-      document.removeEventListener('keydown', handleTab);
-    };
+      document.addEventListener("keydown", handleTab);
+      return () => {
+        document.removeEventListener("keydown", handleTab);
+      };
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, [isMenuOpen]);
 
   // Calculate total cart items
-  const cartItemCount: number = (Array.isArray(cartItems) ? cartItems : []).reduce((total: number, item: { quantity?: number }) => total + Number(item?.quantity || 0), 0);
+  const cartItemCount: number = (Array.isArray(cartItems) ? cartItems : []).reduce(
+    (total: number, item: { quantity?: number }) => total + Number(item?.quantity || 0),
+    0
+  );
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen((prev) => !prev);
   };
 
   const toggleSearch = () => {
-    setIsSearchVisible(!isSearchVisible);
+    setIsSearchVisible((prev) => !prev);
   };
 
   const closeSearch = () => {
     setIsSearchVisible(false);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    setIsSearchVisible(false);
+    router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
   };
 
   return (
@@ -423,8 +469,8 @@ export default function Navbar() {
               aria-hidden="true"
             />
             <div className="fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-50 p-3 sm:p-4 w-11/12 max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 animate-slide-down">
-              <Form
-                action={`/search`}
+              <form
+                onSubmit={handleSearchSubmit}
                 className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3"
               >
                 <label htmlFor="search-input" className="sr-only">
@@ -446,7 +492,7 @@ export default function Navbar() {
                 >
                   Search
                 </button>
-              </Form>
+              </form>
             </div>
           </>
         )}
