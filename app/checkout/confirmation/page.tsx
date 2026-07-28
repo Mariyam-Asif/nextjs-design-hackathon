@@ -173,9 +173,9 @@ function OrderConfirmationContent() {
       <div className="no-print">
         <Banner pageName="Order Confirmation" showLogo={true} />
       </div>
-      <div className="max-w-5xl mx-auto px-6 lg:px-24 py-16 print-container">
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-24 py-8 sm:py-14 print-container">
         {/* Success Message */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8 no-print">
+        <div className="bg-green-50 border border-green-200 rounded-xl p-5 sm:p-6 mb-6 sm:mb-8 no-print">
           <div className="flex items-start">
             <svg
               className="w-6 h-6 text-green-600 mt-1 mr-3 flex-shrink-0"

@@ -28,6 +28,7 @@ export default function Navbar() {
 
   // Helper to determine if path is active
   const isActive = (path: string) => {
+    if (!pathname) return false;
     if (path === '/') {
       return pathname === '/';
     }

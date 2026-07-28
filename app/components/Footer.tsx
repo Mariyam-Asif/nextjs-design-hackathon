@@ -46,7 +46,7 @@ export default function Footer() {
               <h3 className="font-medium text-center md:text-start text-xl md:text-base text-[#9F9F9F] mb-7 lg:mb-14">
                 Links
               </h3>
-              <ul className="grid grid-cols-2 md:flex md:flex-col text-center md:text-start gap-2 md:gap-[46px] text-base font-medium">
+              <ul className="flex flex-col text-center md:text-start gap-4 md:gap-[46px] text-base font-medium">
                 <li>
                   <Link
                     href="/"
@@ -86,7 +86,7 @@ export default function Footer() {
               <h3 className="font-medium text-center md:text-start text-xl md:text-base text-[#9F9F9F] mb-7 lg:mb-14">
                 Help
               </h3>
-              <ul className="grid grid-cols-1 md:flex md:flex-col text-center md:text-start gap-5 md:gap-[46px] text-base font-medium">
+              <ul className="flex flex-col text-center md:text-start gap-4 md:gap-[46px] text-base font-medium">
                 <li>
                   <Link
                     href="/orders"
@@ -108,10 +108,10 @@ export default function Footer() {
                     href="/return"
                     className="hover:text-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded"
                   >
-                    Return
+                    Returns
                   </Link>
                 </li>
-                <li className="col-span-2">
+                <li>
                   <Link
                     href="/privacy"
                     className="hover:text-[#B88E2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B88E2F] rounded"
