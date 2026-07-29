@@ -12,30 +12,24 @@
 
 ---
 
-## 🌟 Live Demo
+## Live Demo
 
-🌐 **Live Website:** [https://nextjs-design-hackathon.vercel.app/](https://nextjs-design-hackathon.vercel.app/)
+**Live Website:** [https://nextjs-design-hackathon.vercel.app/](https://nextjs-design-hackathon.vercel.app/)
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
 - [Overview](#-overview)
 - [Key Features](#-key-features)
 - [Architecture & Standards](#-architecture--standards)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Environment Configuration](#-environment-configuration)
-- [Data Import & Sanity Studio](#-data-import--sanity-studio)
-- [Available Scripts](#-available-scripts)
-- [Accessibility & SEO](#-accessibility--seo)
-- [Deployment](#-deployment)
 - [License & Acknowledgments](#-license--acknowledgments)
 
 ---
 
-## 📌 Overview
+## Overview
 
 This project is an end-to-end implementation of a modern eCommerce platform, engineered from a Figma design hackathon specification into a production-grade application.
 
@@ -43,32 +37,32 @@ Driven by a strict **Project Constitution**, the application places performance,
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🛍️ Dynamic Product Discovery & Catalog
+### Dynamic Product Discovery & Catalog
 * **Dynamic Shop Page**: Browse the catalog with real-time server and client-side data fetching powered by Sanity GROQ queries.
 * **Advanced Filters & Sorting**: Filter by category, price range, stock availability, and sort by price (low to high / high to low) or popularity.
 * **Product Search**: Fast, responsive search page (`/search`) querying live product indexes.
 * **Rich Product Detail Pages**: Image gallery with zoom preview (`ImageGallery.tsx`), price breakdown, tag lists, quantity selector, and related products carousel.
 
-### 💳 Cart, Wishlist & Comparison Engine
+### Cart, Wishlist & Comparison Engine
 * **Interactive Cart & Slide-Over Sidebar**: Real-time cart state management (`CartContext.js`) with persistent storage, item quantity adjustments, and slide-over mini-cart UI without leaving the current page.
 * **Wishlist Suite**: Save items for later (`/wishlist`) with instant sync across sessions.
 * **Product Comparison Matrix**: Compare products side-by-side on key attributes, dimensions, materials, and warranty (`/comparison`).
 
-### 📦 Checkout, Shipping & Order Management
+### Checkout, Shipping & Order Management
 * **Multi-Step Checkout**: Billing info validation, shipping address selection using `country-state-city` integration, and order summary calculations.
 * **Order Tracking & Confirmation**: Real-time order placement (`/checkout`), receipt generation, and order detail view (`/orders`).
 * **Payment Flow**: Structured payment handling (`/payment`, `/return`).
 
-### 📰 Content Management & Blog
+### Content Management & Blog
 * **Embedded Sanity Studio**: Admin dashboard accessible directly at `/studio` for live content authoring.
 * **Blog System**: Dynamic articles (`/blog`) with rich content blocks, tags, and author metadata.
 * **Company & Support Pages**: About us (`/about`), Contact with form validation (`/contact`), and Privacy policy (`/privacy`).
 
 ---
 
-## 🏛️ Architecture & Standards
+## Architecture & Standards
 
 Built adhering strictly to the **Project Constitution** (`specs/constitution.md`):
 
@@ -85,7 +79,7 @@ Built adhering strictly to the **Project Constitution** (`specs/constitution.md`
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Domain | Technology / Library | Description |
 | :--- | :--- | :--- |
@@ -101,7 +95,7 @@ Built adhering strictly to the **Project Constitution** (`specs/constitution.md`
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 nextjs-design-hackathon/
@@ -152,7 +146,7 @@ nextjs-design-hackathon/
 ---
 
 
-## 📄 License & Acknowledgments
+## License & Acknowledgments
 
 * **Design**: Hackathon UI/UX Figma Design.
 * **Platform**: Built for the Next.js Design Hackathon initiative.
